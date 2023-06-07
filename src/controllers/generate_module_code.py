@@ -3,8 +3,9 @@ from src.generator.controller_generator import ControllerGenerator
 from src.generator.entity_generator import EntityGenerator
 from src.generator.entity_module_generator import EntityModuleGenerator
 from src.generator.service_generator import ServiceGenerator
+from src.helpers.copy_files import copy_essential_files
 from src.helpers.excel_reader import read_excel_to_list_dict
-from src.helpers.folder_handler import create_folder
+from src.helpers.folder_handler import create_folder, copy_essentials
 from src.helpers.write_file import write_code
 
 
@@ -51,3 +52,5 @@ def generate_module(models_path: str, excel_path: str):
     api_module_generator.build(modules)
     api_module_generator.build_class()
     write_code(models_path + "src/api/api.module.ts", api_module_generator.content)
+    copy_essentials(models_path + "src/")
+    copy_essential_files(models_path + "src/")
