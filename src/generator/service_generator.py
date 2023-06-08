@@ -24,13 +24,10 @@ class ServiceGenerator:
     def build_class_imports(self, list_attr: List):
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
-            if str(dict_attr["column"]).startswith("foreign"):
-                foreign_parts = str(dict_attr["column"]).split("=")
-                foreign_entity_module = foreign_parts[1]
-                foreign_entity_module_parts = foreign_entity_module.split(",")
-                self.class_imports += "import { " + foreign_entity_module_parts[0] + " } from 'src/api/" + \
-                                      foreign_entity_module_parts[3] + "/entity/" + \
-                                      foreign_entity_module_parts[3] + ".entity'\n"
+            if str(dict_attr["column"]) == "foreign":
+                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from 'src/api/" + \
+                                      dict_attr["fe_module"] + "/entity/" + \
+                                      dict_attr["fe_module"] + ".entity'\n"
 
     def build_class(self, module_name: str, entity_dict: dict, pk_dict: dict, list_attr: List):
         self.build_additional_imports(module_name, entity_dict["name"])
@@ -74,17 +71,14 @@ class ServiceGenerator:
         for i in range(2, len(list_attr)):
             attr_dict = list_attr[i]
             col = str(attr_dict["column"])
-            if not col.startswith("foreign_ref"):
-                if col.startswith("foreign="):
-                    foreign_parts = col.split("=")
-                    foreign_entity_module = foreign_parts[1]
-                    foreign_entity_module_parts = foreign_entity_module.split(",")
-                    self.content += "        let " + foreign_entity_module_parts[3] + " = new " + \
-                                    foreign_entity_module_parts[0] + "();\n"
-                    self.content += "        " + foreign_entity_module_parts[3] + "." + foreign_entity_module_parts[4]\
+            if col != "foreign_ref":
+                if col == "foreign":
+                    self.content += "        let " + attr_dict["fe_module"] + " = new " + \
+                                    attr_dict["foreign_entity"] + "();\n"
+                    self.content += "        " + attr_dict["fe_module"] + "." + attr_dict["fe_pk"]\
                                     + " = dto." + attr_dict["name"] + ";\n"
                     self.content += "        entity." + attr_dict["name"] + " = " + \
-                                    foreign_entity_module_parts[3] + ";\n"
+                                    attr_dict["fe_module"] + ";\n"
                 else:
                     self.content += "        entity." + attr_dict["name"] + " = dto." + attr_dict["name"] + ";\n"
         self.content += "        return entity;\n    }\n\n"
@@ -106,17 +100,14 @@ class ServiceGenerator:
         for i in range(2, len(list_attr)):
             attr_dict = list_attr[i]
             col = str(attr_dict["column"])
-            if not col.startswith("foreign_ref"):
-                if col.startswith("foreign="):
-                    foreign_parts = col.split("=")
-                    foreign_entity_module = foreign_parts[1]
-                    foreign_entity_module_parts = foreign_entity_module.split(",")
-                    self.content += "        let " + foreign_entity_module_parts[3] + " = new " + \
-                                    foreign_entity_module_parts[0] + "();\n"
-                    self.content += "        " + foreign_entity_module_parts[3] + "." + foreign_entity_module_parts[4] \
+            if col != "foreign_ref":
+                if col == "foreign":
+                    self.content += "        let " + attr_dict["fe_module"] + " = new " + \
+                                    attr_dict["foreign_entity"] + "();\n"
+                    self.content += "        " + attr_dict["fe_module"] + "." + attr_dict["fe_pk"] \
                                     + " = dto." + attr_dict["name"] + ";\n"
                     self.content += "        entity." + attr_dict["name"] + " = dto." + attr_dict["name"] + \
-                                    " ? " + foreign_entity_module_parts[3] + " : entity." + attr_dict["name"] + ";\n"
+                                    " ? " + attr_dict["fe_module"] + " : entity." + attr_dict["name"] + ";\n"
                 else:
                     self.content += "        entity." + attr_dict["name"] + " = dto." + attr_dict["name"] + \
                                     " ? dto." + attr_dict["name"] + " : entity." + attr_dict["name"] + ";\n"

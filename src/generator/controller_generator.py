@@ -33,7 +33,8 @@ class ControllerGenerator:
         self.content += "\n"
 
     def build_class_name(self, module_name: str, dict_class: dict, pk_dict: dict):
-        self.content += "@Controller('" + module_name + "')\n"
+        endpoint = module_name.replace("_", "-")
+        self.content += "@Controller('" + endpoint + "')\n"
         self.content += "export class " + dict_class["name"] + "Controller extends BasicRestController<" + \
                         dict_class["name"] + ", " + pk_dict["type"] + ", " + dict_class["name"] + "DTO>{\n\n"
         self.content += "    constructor(protected service: " + dict_class["name"] + "Service){super();}\n\n"

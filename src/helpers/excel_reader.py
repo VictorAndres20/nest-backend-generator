@@ -12,16 +12,23 @@ def read_excel_to_list_dict(path_file: str) -> List:
     else:
         xls = pd.ExcelFile(path_file)
     for sheet_name in xls.sheet_names:
-        df = pd.read_excel(xls, sheet_name=sheet_name, dtype=str)
-        df = df.fillna("")
-        module_dict = {sheet_name: []}
-        for index, row in df.iterrows():
-            module_dict[sheet_name].append({
-                'name': row['NAME'],
-                'type': row['TYPE'],
-                'column': row['COLUMN']
-            })
-        list_dict.append(module_dict)
+        if sheet_name != 'cg_type_col_params':
+            df = pd.read_excel(xls, sheet_name=sheet_name, dtype=str)
+            df = df.fillna("")
+            module_dict = {sheet_name: []}
+            for index, row in df.iterrows():
+                module_dict[sheet_name].append({
+                    'name': row['NAME'],
+                    'type': row['TYPE'],
+                    'column': row['COLUMN'],
+                    'table_name': row['TABLE_NAME'],
+                    'foreign_entity': row['FOREIGN_ENTITY'],
+                    'fe_property': row['FE_PROPERTY'],
+                    'fe_pk_type': row['FE_PK_TYPE'],
+                    'fe_pk': row['FE_PK'],
+                    'fe_module': row['FE_MODULE'],
+                })
+            list_dict.append(module_dict)
 
     return list_dict
 

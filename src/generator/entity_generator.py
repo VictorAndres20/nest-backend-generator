@@ -20,12 +20,9 @@ class EntityGenerator:
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
             if str(dict_attr["column"]).startswith("foreign"):
-                foreign_parts = str(dict_attr["column"]).split("=")
-                foreign_entity_module = foreign_parts[1]
-                foreign_entity_module_parts = foreign_entity_module.split(",")
-                self.class_imports += "import { " + foreign_entity_module_parts[0] + " } from 'src/api/" + \
-                                      foreign_entity_module_parts[3] + "/entity/" + \
-                                      foreign_entity_module_parts[3] + ".entity'\n"
+                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from 'src/api/" + \
+                                      dict_attr["fe_module"] + "/entity/" + \
+                                      dict_attr["fe_module"] + ".entity'\n"
 
     def build_class(self, list_attr: List):
         self.build_headers(list_attr)
@@ -38,13 +35,11 @@ class EntityGenerator:
                 if str(dict_attr["column"]).startswith("foreign"):
                     foreign_parts = str(dict_attr["column"]).split("=")
                     foreign_type = foreign_parts[0]
-                    foreign_entity_module = foreign_parts[1]
-                    foreign_entity_module_parts = foreign_entity_module.split(",")
                     if foreign_type == "foreign":
-                        self.build_main_content_many_to_one(dict_attr, foreign_entity_module_parts)
-                        self.build_dto_main_content(dict_attr, foreign_entity_module_parts[2])
+                        self.build_main_content_many_to_one(dict_attr)
+                        self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
                     elif foreign_type == "foreign_ref":
-                        self.build_main_content_one_to_many(dict_attr, foreign_entity_module_parts)
+                        self.build_main_content_one_to_many(dict_attr)
                 else:
                     self.build_main_content(dict_attr)
                     self.build_dto_main_content(dict_attr, dict_attr["type"])
@@ -61,24 +56,24 @@ class EntityGenerator:
         self.content += "    " + self.decorator + dict_class["column"] + "\n"
         self.content += "    " + dict_class["name"] + ": " + dict_class["type"] + ";\n\n"
 
-    def build_main_content_many_to_one(self, dict_class: dict, foreign_entity_module: list):
-        self.content += "    " + self.decorator + "ManyToOne(() => " + foreign_entity_module[0] + ", e => e." + \
-                        foreign_entity_module[1] + ", {" + "\n"
+    def build_main_content_many_to_one(self, dict_class: dict):
+        self.content += "    " + self.decorator + "ManyToOne(() => " + dict_class["foreign_entity"] + ", e => e." + \
+                        dict_class["fe_property"] + ", {" + "\n"
         self.content += "        " + 'onDelete: "CASCADE",' + "\n"
         self.content += "        " + 'eager: true,' + "\n    })\n"
         self.content += "    " + self.decorator + 'JoinColumn({ name: "' + dict_class["name"] + '" })\n'
         self.content += "    " + dict_class["name"] + ": " + dict_class["type"] + ";\n\n"
 
-    def build_main_content_one_to_many(self, dict_class: dict, foreign_entity_module: list):
-        self.content += "    " + self.decorator + 'OneToMany(() => ' + foreign_entity_module[0] + ', e => e.' + \
-                        foreign_entity_module[1] + ')\n'
+    def build_main_content_one_to_many(self, dict_class: dict):
+        self.content += "    " + self.decorator + 'OneToMany(() => ' + dict_class["foreign_entity"] + ', e => e.' + \
+                        dict_class["fe_property"] + ')\n'
         self.content += "    " + dict_class["name"] + ": " + dict_class["type"] + ";\n\n"
 
     def build_close(self):
         self.content += "}"
 
     def build_class_name(self, dict_class: dict):
-        self.content += self.decorator + dict_class["column"] + "\n"
+        self.content += self.decorator + dict_class["column"] + "({name:'" + dict_class["table_name"] + "'})\n"
         self.content += "export class " + dict_class["name"] + "{\n\n"
 
     def build_dto_class(self, dict_class: dict):
@@ -90,5 +85,3 @@ class EntityGenerator:
 
     def build_dto_close(self):
         self.dto_content += "}"
-
-
