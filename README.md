@@ -4,11 +4,13 @@
 - Use models_template.xlsx
 Models for database representation for ORM
 
-- In main.py change variables
+- In main.py change variables paths
 
-- Create src folder for NestJS executing main
+- Create src folder for NestJS executing main.py
 
-- Replace default src folder
+- Create NestJS project with nest cli 
+
+- Replace default src folder in NestJS project with generated one
 
 - Install npm packages
 
@@ -23,5 +25,12 @@ Models for database representation for ORM
 2ROW: Primary Key it could be (PrimaryGeneratedColumn() or PrimaryColumn())
 nROW: Other properties:
         - Normal Columns: Column() or Column({ select: false })
-        - Foreign Key(ManyToOne): foreign=[EntityRef,EntityRef property plural,EntityRef primary key type,EntityRef module name,EntityRef primary key property]
-        - Foreign Key Reference(OneToMany): foreign_ref=[EntityForeign,EntityForeign property for join,empty,EntityForeign module name]
+        - Foreign Key(ManyToOne): foreign
+        - Foreign Key Reference(OneToMany): foreign_ref
+
+### FOREIGN COLUMNS EXPLANATION
+- FOREIGN_ENTITY: Foreign Key Entity class name
+- FE_PROPERTY: Foreign Key Entity property that make the relation
+- FE_PK_TYPE: Foreign Key Entity PRIMARY KEY type
+- FE_PK: Foreign Key Entity PRIMARY KEY property
+- FE_MODULE: Foreign Key Entity module package name
