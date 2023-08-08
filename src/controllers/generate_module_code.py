@@ -3,6 +3,7 @@ from src.generator.controller_generator import ControllerGenerator
 from src.generator.entity_generator import EntityGenerator
 from src.generator.entity_module_generator import EntityModuleGenerator
 from src.generator.service_generator import ServiceGenerator
+from src.generator.sql_generator import SQLGenerator
 from src.helpers.copy_files import copy_essential_files
 from src.helpers.excel_reader import read_excel_to_list_dict
 from src.helpers.folder_handler import create_folder, copy_essentials
@@ -12,11 +13,14 @@ from src.helpers.write_file import write_code
 def generate_module(models_path: str, excel_path: str):
     create_folder(models_path + "src")
     create_folder(models_path + "src/api")
+    create_folder(models_path + "db")
+    ddl = ''
     list_modules = read_excel_to_list_dict(excel_path)
     print(list_modules)
     entity_generator = EntityGenerator()
     service_generator = ServiceGenerator()
     controller_generator = ControllerGenerator()
+    sql_generator = SQLGenerator()
     modules = []
     for i in list_modules:
         module_name = list(i.keys())[0]
@@ -48,9 +52,14 @@ def generate_module(models_path: str, excel_path: str):
         write_code(models_path + "src/api/" + module_name + "/" + module_name + ".module.ts",
                    entity_module_generator.content)
 
+        sql_generator.build_class(list_attr, class_dict)
+        ddl += sql_generator.content
+        sql_generator.clean()
+
     api_module_generator = ApiModuleGenerator()
     api_module_generator.build(modules)
     api_module_generator.build_class()
     write_code(models_path + "src/api/api.module.ts", api_module_generator.content)
     copy_essentials(models_path + "src/")
     copy_essential_files(models_path + "src/")
+    write_code(models_path + "db/ddl.sql", ddl)

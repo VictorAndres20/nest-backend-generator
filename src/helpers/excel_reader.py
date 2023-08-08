@@ -27,6 +27,9 @@ def read_excel_to_list_dict(path_file: str) -> List:
                     'fe_pk_type': row['FE_PK_TYPE'],
                     'fe_pk': row['FE_PK'],
                     'fe_module': row['FE_MODULE'],
+                    'db_type': row['DB_TYPE'],
+                    'default_value': row['DEFAULT_VALUE'],
+                    'null': row['NULL'],
                 })
             list_dict.append(module_dict)
 

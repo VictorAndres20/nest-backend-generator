@@ -13,6 +13,34 @@ Models for database representation for ORM
 - Replace default src folder in NestJS project with generated one
 
 - Install npm packages
+```
+npm install --save @nestjs/typeorm typeorm
+npm install --save reflect-metadata
+npm install --save dotenv
+npm install --save @nestjs/passport passport @nestjs/jwt passport-jwt
+npm install --save-dev @types/passport-jwt
+npm install bcrypt
+```
+MySQL
+```
+npm install --save mysql2
+```
+
+PostgreSQL
+```
+npm install --save pg
+```
+
+Oracle
+```
+npm install --save oracledb
+```
+
+- OPTIONAL
+```
+npm install --save exceljs
+```
+
 
 -----------------------------------------------
 
