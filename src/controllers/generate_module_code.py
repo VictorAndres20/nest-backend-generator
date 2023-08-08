@@ -21,6 +21,7 @@ def generate_module(models_path: str, excel_path: str):
     service_generator = ServiceGenerator()
     controller_generator = ControllerGenerator()
     sql_generator = SQLGenerator()
+    sql_generator.schema = "ueb"
     modules = []
     for i in list_modules:
         module_name = list(i.keys())[0]

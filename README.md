@@ -44,7 +44,7 @@ npm install --save exceljs
 
 -----------------------------------------------
 
-## models_template.xlsx Usage
+## models_template.xlsx or models.xlsx Usage
 - All sheets are models name (tables)
 
 - Sheet columns info:
