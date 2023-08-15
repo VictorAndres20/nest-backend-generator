@@ -67,4 +67,8 @@ export abstract class BasicCrudService<T, ID, D>{
             throw new Error(err.message);
         }
     }
+
+    async findAllPaged(page: number = 0, limit: number = 8): Promise<[T[], number]> {
+        return await this.repo.findAndCount({ skip: page, take: limit});
+    }
 }

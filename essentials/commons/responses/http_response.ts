@@ -5,6 +5,7 @@ export class HttpResponse<T>{
     private error: string;
     private data: T;
     private list: T[];
+    private paged: [T[], number];
 
     setError(error: string): HttpResponse<T>{
         this.error = error;
@@ -23,6 +24,11 @@ export class HttpResponse<T>{
 
     setList(list: T[]): HttpResponse<T>{
         this.list = list;
+        return this;
+    }
+
+    setPaged(paged: [T[], number]): HttpResponse<T>{
+        this.paged = paged;
         return this;
     }
 

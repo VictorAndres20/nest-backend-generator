@@ -18,6 +18,16 @@ export abstract class BasicRestController<T, ID, D> {
         }
     }
 
+    @Get('all-paged/:page/:limit')
+    async findAllPaged(@Param("page") page: number, @Param("limit") limit: number): Promise<HttpResponse<T>> {
+        try{
+            let list = await this.service.findAllPaged(page, limit);
+            return new HttpResponse<T>().setPaged(list).build(true);
+        } catch(err){
+            return new HttpResponse<T>().setError(err.message).build(false);
+        }
+    }
+
     @Get('id/:id')
     async findById(@Param('id') id: ID): Promise<HttpResponse<T>> {
         try{

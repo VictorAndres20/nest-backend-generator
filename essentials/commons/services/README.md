@@ -6,6 +6,7 @@ This asbtract Class provides methods to create a service with 4 CRUD operations
 - FindAll
 - CreateOne
 - EditOne
+- FindAllPaged
 **This works with TypeORM**
 
 #### Implementation
