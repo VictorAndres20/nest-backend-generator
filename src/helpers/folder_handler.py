@@ -15,6 +15,12 @@ def copy_essentials(destination_dir: str):
     copy_folder(base_path + utils_path, destination_dir + utils_path)
 
 
+def copy_react(destination_dir: str):
+    base_path = "react/"
+    utils_path = "_utils"
+    copy_folder(base_path + utils_path, destination_dir + utils_path)
+
+
 def copy_folder(source_dir: str, destination_dir: str):
     if os.path.exists(destination_dir):
         shutil.rmtree(destination_dir)

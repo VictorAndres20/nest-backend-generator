@@ -9,5 +9,11 @@ def copy_essential_files(destination_dir: str):
     copy_file(base_path + main_file, destination_dir + main_file)
 
 
+def copy_react_essential_files(destination_dir: str):
+    base_path = "react/"
+    base_service_file = "base.service.js"
+    copy_file(base_path + base_service_file, destination_dir + base_service_file)
+
+
 def copy_file(source_file: str, destination_file: str):
     shutil.copy(source_file, destination_file)
