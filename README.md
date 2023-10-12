@@ -1,4 +1,4 @@
-# Backend generator for NodeJS
+# Database, Backend NestJS and Frontend React generator
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
 - Use models_template.xlsx
@@ -48,7 +48,7 @@ npm install --save exceljs
 - All sheets are models name (tables)
 
 - Sheet columns info:
-1ROW: Columns names **(DONT TOUCH IT)**
+1ROW: Columns names **(DON'T TOUCH IT)**
 2ROW: Entity name
 2ROW: Primary Key it could be (PrimaryGeneratedColumn() or PrimaryColumn())
 nROW: Other properties:
@@ -62,3 +62,8 @@ nROW: Other properties:
 - FE_PK_TYPE: Foreign Key Entity PRIMARY KEY type
 - FE_PK: Foreign Key Entity PRIMARY KEY property
 - FE_MODULE: Foreign Key Entity module package name
+
+### DATABASE COLUMNS EXPLANATION
+- DB_TYPE: Database Data Type (VARCHAR(500), INTEGER, DATE, SMALLINT, TIMESTAMP).
+- DEFAULT_VALUE: Default value if it is null (1, gen_random_uuid(), CURRENT_TIMESTAMP)
+- NULL: if it has 'X' then NOT NULL is added.

@@ -14,8 +14,8 @@ class SQLGenerator:
 
     def build_class(self, list_attr: List, dict_class: dict):
         self.build_class_name(dict_class)
-        filter_attr = list(filter( lambda x: (str(x["type"]) != "entity" and str(x["column"]) != 'foreign_ref') ,
-                                   list_attr))
+        filter_attr = list(filter(lambda x: (str(x["type"]) != "entity" and str(x["column"]) != 'foreign_ref'),
+                                  list_attr))
         for i in range(len(filter_attr)):
             dict_attr = filter_attr[i]
             self.build_main_content(dict_attr, i, len(filter_attr))
