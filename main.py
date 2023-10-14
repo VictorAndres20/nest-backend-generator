@@ -1,7 +1,6 @@
 from src.controllers.generate_module_code import generate_module
 
-# models_path = "/home/viti/KoalaSoftwareSAS/projects/KS_Platform/2.Develop/modules/"
-models_path = "/home/viti/Documents/Freelance/projects/practicum/1.Design/models/"
+models_path = "/home/viti/Documents/Freelance/projects/survascun/1.Design/models/"
 excel_path = models_path + "models.xlsx"
 
 db_schema = 'ueb'

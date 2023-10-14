@@ -23,6 +23,9 @@ def generate_module(models_path: str, excel_path: str, db_schema: str):
     create_folder(models_path + "react/src")
     create_folder(models_path + "react/src/_services")
     create_folder(models_path + "react/src/_events")
+    create_folder(models_path + "react/src/_hooks")
+    create_folder(models_path + "react/src/pages")
+    create_folder(models_path + "react/src/widgets ")
     ddl = ''
     list_modules = read_excel_to_list_dict(excel_path)
     print(list_modules)
@@ -91,6 +94,8 @@ def generate_module(models_path: str, excel_path: str, db_schema: str):
         react_create_event_generator.build_class(module_name, class_dict)
         write_code(models_path + "react/src/_events/" + module_name + "/create.event.js",
                    react_create_event_generator.content)
+
+        create_folder(models_path + "react/src/_hooks/" + module_name)
 
     api_module_generator = ApiModuleGenerator()
     api_module_generator.build(modules)
