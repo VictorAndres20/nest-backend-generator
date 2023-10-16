@@ -25,7 +25,7 @@ class ReactServiceGenerator:
 
     def build_class_name(self, module_name: str, dict_class: dict, pk_dict: dict):
         endpoint = module_name.replace("_", "-")
-        self.content += "const BASE_PATH = '" + endpoint + "';\n\n"
+        self.content += "const BASE_PATH = '/" + endpoint + "';\n\n"
         self.content += "export const findAll" + dict_class["name"] + " = async () => {\n" + \
                         "    return await handleFetch(`${BASE_PATH}/all`, GET_OPTIONS);" + \
                         "\n}\n\n"
