@@ -18,7 +18,10 @@ def copy_essentials(destination_dir: str):
 def copy_react(destination_dir: str):
     base_path = "react/"
     utils_path = "_utils"
+    pages_path = "pages"
+    utils_path = "_config"
     copy_folder(base_path + utils_path, destination_dir + utils_path)
+    copy_folder(base_path + pages_path, destination_dir + pages_path)
 
 
 def copy_folder(source_dir: str, destination_dir: str):

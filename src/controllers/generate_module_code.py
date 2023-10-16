@@ -8,7 +8,7 @@ from src.generator.react_model_generator import ReactModelGenerator
 from src.generator.react_service_generator import ReactServiceGenerator
 from src.generator.service_generator import ServiceGenerator
 from src.generator.sql_generator import SQLGenerator
-from src.helpers.copy_files import copy_essential_files, copy_react_essential_files
+from src.helpers.copy_files import copy_essential_files, copy_react_essential_files, copy_react_essential_appjs_files
 from src.helpers.excel_reader import read_excel_to_list_dict
 from src.helpers.folder_handler import create_folder, copy_essentials, copy_react
 from src.helpers.write_file import write_code
@@ -24,7 +24,6 @@ def generate_module(models_path: str, excel_path: str, db_schema: str):
     create_folder(models_path + "react/src/_services")
     create_folder(models_path + "react/src/_events")
     create_folder(models_path + "react/src/_hooks")
-    create_folder(models_path + "react/src/pages")
     create_folder(models_path + "react/src/widgets ")
     ddl = ''
     list_modules = read_excel_to_list_dict(excel_path)
@@ -106,3 +105,4 @@ def generate_module(models_path: str, excel_path: str, db_schema: str):
     write_code(models_path + "db/ddl.sql", ddl)
     copy_react_essential_files(models_path + "react/src/_services/")
     copy_react(models_path + "react/src/")
+    copy_react_essential_appjs_files(models_path + "react/src/")
