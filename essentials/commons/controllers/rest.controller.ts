@@ -1,6 +1,7 @@
-import { Get, Post, HttpCode, Body, Param, Put } from '@nestjs/common';
+import { Get, Post, HttpCode, Body, Param, Put, Res, HttpStatus } from '@nestjs/common';
 import { BasicCrudService } from '../services/crud.service';
 import { HttpResponse } from '../responses/http_response';
+import { Response } from 'express';
 
 export abstract class BasicRestController<T, ID, D> {
 
@@ -9,54 +10,52 @@ export abstract class BasicRestController<T, ID, D> {
     // Do not forguet constructor in implememtation class to initialize service with specific ModuleService
 
     @Get('all')
-    async findAll(): Promise<HttpResponse<T>> {
+    async findAll(@Res() res: Response): Promise<void> {
         try{
             let list = await this.service.findAll();
-            return new HttpResponse<T>().setList(list).build(true);
+            res.status(HttpStatus.OK).json(new HttpResponse<T>().setList(list).build(true));
         } catch(err){
-            return new HttpResponse<T>().setError(err.message).build(false);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new HttpResponse<T>().setError(err.message).build(false));
         }
     }
 
     @Get('all-paged/:page/:limit')
-    async findAllPaged(@Param("page") page: number, @Param("limit") limit: number): Promise<HttpResponse<T>> {
+    async findAllPaged(@Res() res: Response, @Param("page") page: number, @Param("limit") limit: number): Promise<void>{
         try{
             let list = await this.service.findAllPaged(page, limit);
-            return new HttpResponse<T>().setPaged(list).build(true);
+            res.status(HttpStatus.OK).json(new HttpResponse<T>().setPaged(list).build(true));
         } catch(err){
-            return new HttpResponse<T>().setError(err.message).build(false);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new HttpResponse<T>().setError(err.message).build(false));
         }
     }
 
     @Get('id/:id')
-    async findById(@Param('id') id: ID): Promise<HttpResponse<T>> {
+    async findById(@Res() res: Response, @Param('id') id: ID): Promise<void> {
         try{
             let data = await this.service.findById(id);
-            return new HttpResponse<T>().setData(data).build(true);
+            res.status(HttpStatus.OK).json(new HttpResponse<T>().setData(data).build(true));
         } catch(err){
-            return new HttpResponse<T>().setError(err.message).build(false);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new HttpResponse<T>().setError(err.message).build(false));
         }
     }
 
     @Post('create')
-    @HttpCode(201)
-    async createOne(@Body() dto: D): Promise<HttpResponse<T>> {
+    async createOne(@Res() res: Response, @Body() dto: D): Promise<void> {
         try{
             let data = await this.service.createOne(dto);
-            return new HttpResponse<T>().setData(data).build(true);
+            res.status(HttpStatus.CREATED).json(new HttpResponse<T>().setData(data).build(true));
         } catch(err){
-            return new HttpResponse<T>().setError(err.message).build(false);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new HttpResponse<T>().setError(err.message).build(false));
         }
     }
 
     @Put('edit/:id')
-    @HttpCode(201)
-    async editOne(@Body() dto: D, @Param('id') id: ID): Promise<HttpResponse<T>> {
+    async editOne(@Res() res: Response, @Body() dto: D, @Param('id') id: ID): Promise<void> {
         try{
             let data = await this.service.editOne(dto, id);
-            return new HttpResponse<T>().setData(data).build(true);
+            res.status(HttpStatus.OK).json(new HttpResponse<T>().setData(data).build(true));
         } catch(err){
-            return new HttpResponse<T>().setError(err.message).build(false);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json(new HttpResponse<T>().setError(err.message).build(false));
         }
     }
 }
