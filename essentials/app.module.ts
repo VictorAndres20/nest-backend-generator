@@ -19,7 +19,7 @@ import { ApiModule } from './api/api.module';
       database: process.env.DB_NAME,
       //schema: process.env.DB_SCHEMA, //Uncomment it if you use Schema
       synchronize: false,
-      logging: true, // TODO in production put it false
+      logging: process.env.ORM_LOG ? true : false, // In production put it false
       autoLoadEntities: true,
     }),
     ApiModule,
