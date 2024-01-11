@@ -24,7 +24,7 @@ def generate_module(models_path: str, excel_path: str, db_schema: str):
     create_folder(models_path + "react/src/_services")
     create_folder(models_path + "react/src/_events")
     create_folder(models_path + "react/src/_hooks")
-    create_folder(models_path + "react/src/widgets ")
+    create_folder(models_path + "react/src/widgets")
     ddl = ''
     list_modules = read_excel_to_list_dict(excel_path)
     print(list_modules)
