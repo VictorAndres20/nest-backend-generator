@@ -14,7 +14,7 @@ from src.helpers.folder_handler import create_folder, copy_essentials, copy_reac
 from src.helpers.write_file import write_code
 
 
-def generate_module(models_path: str, excel_path: str, db_schema: str):
+def generate_module(models_path: str, excel_path: str, db_schema: str, generate_sql_relations: bool = False):
     create_folder(models_path + "nest")
     create_folder(models_path + "nest/src")
     create_folder(models_path + "nest/src/api")
@@ -95,6 +95,18 @@ def generate_module(models_path: str, excel_path: str, db_schema: str):
                    react_create_event_generator.content)
 
         create_folder(models_path + "react/src/_hooks/" + module_name)
+    
+    if generate_sql_relations is True:
+        ddl += "\n--- Foreign Keys\n"
+        sql_generator = SQLGenerator()
+        sql_generator.schema = db_schema
+        for i in list_modules:
+            module_name = list(i.keys())[0]
+            list_attr = i[module_name]
+            class_dict = list_attr[0]
+            sql_generator.build_foriegn(list_attr, class_dict)
+            ddl += sql_generator.content
+            sql_generator.clean()
 
     api_module_generator = ApiModuleGenerator()
     api_module_generator.build(modules)
