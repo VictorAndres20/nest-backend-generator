@@ -1,7 +1,10 @@
 from src.controllers.generate_module_code import generate_module
+from dotenv import dotenv_values
 
-models_path = "/home/viti/Documents/KoalaSoftwareSAS/projects/advances/1.Design/models/"
-excel_path = models_path + "models.xlsx"
+config = dotenv_values(".env")
+
+models_path = config["MODELS_PATH"]
+excel_path = models_path + config["MODELS_FILE"]
 
 # db_schema = None
 db_schema = 'ks'
