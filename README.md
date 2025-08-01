@@ -39,6 +39,7 @@ npm install --save oracledb
 - OPTIONAL
 ```
 npm install --save exceljs
+npm install --save body-parser
 ```
 
 
