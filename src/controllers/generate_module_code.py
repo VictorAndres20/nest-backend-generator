@@ -26,6 +26,7 @@ def generate_module(models_path: str, excel_path: str, db_schema: str, generate_
     create_folder(models_path + "react/src/_hooks")
     create_folder(models_path + "react/src/widgets")
     ddl = ''
+    # TODO - Add function to create list_modules reading drawDB json file
     list_modules = read_excel_to_list_dict(excel_path)
     print(list_modules)
 
