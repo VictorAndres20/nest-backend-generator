@@ -1,12 +1,13 @@
 # Database, Backend NestJS and Frontend React generator
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-- Use models_template.xlsx
+- Use models_template.xlsx or a drawDB.io json file
 Models for database representation for ORM
 
-- In main.py change variables paths
+- In  a `.env` file update variable paths
+See `env-example` file
 
-- Create src folder for NestJS executing main.py
+- Generate src folder for NestJS executing main.py
 
 - Create NestJS project with nest cli 
 
@@ -46,6 +47,10 @@ npm install --save body-parser
 -----------------------------------------------
 
 ## models_template.xlsx or models.xlsx Usage
+
+> [!NOTE]
+> You can use a drawDB.io json file (experimental)
+
 - All sheets are models name (tables)
 
 - Sheet columns info:

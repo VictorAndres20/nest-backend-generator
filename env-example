@@ -1,3 +1,7 @@
 # Create a .env file or rename this one
-MODELS_PATH=/home/viti/models/
-MODELS_FILE=models_template.xlsx
+MODELS_PATH=/home/vic/models/
+# MODELS_FILE=models_template.xlsx
+# Set a json file to use a drawDB json file!
+MODELS_FILE=draw-db-model.json
+GENERATE_FOREIGN_KEYS=True
+# DB_SCHEMA=vic

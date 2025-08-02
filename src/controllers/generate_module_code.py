@@ -9,12 +9,13 @@ from src.generator.react_service_generator import ReactServiceGenerator
 from src.generator.service_generator import ServiceGenerator
 from src.generator.sql_generator import SQLGenerator
 from src.helpers.copy_files import copy_essential_files, copy_react_essential_files, copy_react_essential_appjs_files
+from src.helpers.drawdb_reader import build_list_modules_from_draw_db_io
 from src.helpers.excel_reader import read_excel_to_list_dict
 from src.helpers.folder_handler import create_folder, copy_essentials, copy_react
 from src.helpers.write_file import write_code
 
 
-def generate_module(models_path: str, excel_path: str, db_schema: str, generate_sql_relations: bool = False):
+def generate_module(models_path: str, file_path: str, db_schema: str, generate_sql_relations: bool = False):
     create_folder(models_path + "nest")
     create_folder(models_path + "nest/src")
     create_folder(models_path + "nest/src/api")
@@ -26,8 +27,8 @@ def generate_module(models_path: str, excel_path: str, db_schema: str, generate_
     create_folder(models_path + "react/src/_hooks")
     create_folder(models_path + "react/src/widgets")
     ddl = ''
-    # TODO - Add function to create list_modules reading drawDB json file
-    list_modules = read_excel_to_list_dict(excel_path)
+
+    list_modules = build_list_modules_from_draw_db_io(file_path) if file_path.endswith(".json") else read_excel_to_list_dict(file_path)
     print(list_modules)
 
     entity_generator = EntityGenerator()
@@ -97,7 +98,7 @@ def generate_module(models_path: str, excel_path: str, db_schema: str, generate_
 
         create_folder(models_path + "react/src/_hooks/" + module_name)
     
-    if generate_sql_relations is True:
+    if generate_sql_relations:
         ddl += "\n--- Foreign Keys\n"
         sql_generator = SQLGenerator()
         sql_generator.schema = db_schema
