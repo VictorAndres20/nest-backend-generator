@@ -24,8 +24,11 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     create_folder(models_path + "react/src")
     create_folder(models_path + "react/src/_services")
     create_folder(models_path + "react/src/_events")
-    create_folder(models_path + "react/src/_hooks")
     create_folder(models_path + "react/src/widgets")
+
+    # First copy React
+    copy_react(models_path + "react/src/")
+
     ddl = ''
 
     list_modules = build_list_modules_from_draw_db_io(file_path) if file_path.endswith(".json") else read_excel_to_list_dict(file_path)
@@ -114,9 +117,11 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     api_module_generator.build(modules)
     api_module_generator.build_class()
     write_code(models_path + "nest/src/api/api.module.ts", api_module_generator.content, False)
+
     copy_essentials(models_path + "nest/src/")
     copy_essential_files(models_path + "nest/src/")
+
     write_code(models_path + "db/ddl.sql", ddl, True)
+
     copy_react_essential_files(models_path + "react/src/_services/")
-    copy_react(models_path + "react/src/")
     copy_react_essential_appjs_files(models_path + "react/src/")
