@@ -12,7 +12,8 @@ string_types = [
 number_types = [
     "INTEGER",
     "DECIMAL",
-    "NUMBER"
+    "NUMBER",
+    "SERIAL",
 ]
 
 data_types = [
@@ -23,6 +24,12 @@ data_types = [
 boolean_types = [
     "BOOLEAN"
 ]
+
+def get_is_not_autoincrement_by_type(field_type: str | None):
+    if field_type is None or field_type == '':
+        return None
+
+    return False if field_type != 'SERIAL' else True
 
 def get_type_orm_type(table_field_type: str):
     if table_field_type in string_types:
@@ -92,7 +99,10 @@ def build_list_modules_from_draw_db_io(path: str):
             table_field_default = table_field["default"]
             is_primary_field = table_field["primary"]
             is_not_null_field = table_field["notNull"]
-            is_not_increment_field = table_field["increment"]
+
+            is_not_increment_field_by_type = get_is_not_autoincrement_by_type(table_field_type)
+            is_not_increment_field = is_not_increment_field_by_type if is_not_increment_field_by_type is not None \
+                else table_field["increment"]
 
             orm_type = get_type_orm_type(table_field_type)
 
@@ -149,10 +159,9 @@ def build_list_modules_from_draw_db_io(path: str):
         if module_idx != -1:
             child_field_idx = find_index('name', child_field_name,list_modules[module_idx][child_table_name])
             if child_field_idx != -1:
-                print("found foreign")
                 list_modules[module_idx][child_table_name][child_field_idx]["column"] = "foreign"
                 list_modules[module_idx][child_table_name][child_field_idx]["foreign_entity"] = to_pascal_case(parent_table_name)
-                list_modules[module_idx][child_table_name][child_field_idx]["fe_property"] = f"{child_field_name}_list"
+                list_modules[module_idx][child_table_name][child_field_idx]["fe_property"] = f"{child_table_name}_list"
                 list_modules[module_idx][child_table_name][child_field_idx]["fe_pk_type"] = parent_field_dict["type"]
                 list_modules[module_idx][child_table_name][child_field_idx]["fe_pk"] = parent_field_name
                 list_modules[module_idx][child_table_name][child_field_idx]["fe_module"] = parent_table_name
@@ -160,11 +169,10 @@ def build_list_modules_from_draw_db_io(path: str):
 
         module_idx = find_index_by_key(parent_table_name, list_modules)
         if module_idx != -1:
-            print("found foreign_ref")
             new_list = list_modules[module_idx][parent_table_name]
             new_list.append(
                 {
-                    'name': f"{child_field_name}_list",
+                    'name': f"{child_table_name}_list",
                     'type': f"{to_pascal_case(child_table_name)}[]",
                     'column': "foreign_ref",
                     'table_name': parent_table_name,
@@ -179,7 +187,6 @@ def build_list_modules_from_draw_db_io(path: str):
                 }
             )
             list_modules[module_idx][parent_table_name] = new_list
-            print(list_modules[module_idx][parent_table_name][len(list_modules[module_idx][parent_table_name]) - 1])
 
     return list_modules
 

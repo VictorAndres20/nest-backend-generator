@@ -55,22 +55,22 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         entity_generator.clean()
         entity_generator.build_class(list_attr)
         write_code(models_path + "nest/src/api/" + module_name + "/entity/" + module_name + ".entity.ts",
-                   entity_generator.content)
+                   entity_generator.content, False)
         write_code(models_path + "nest/src/api/" + module_name + "/entity/" + module_name + ".dto.ts",
-                   entity_generator.dto_content)
+                   entity_generator.dto_content, False)
         service_generator.clean()
         service_generator.build_class(module_name, class_dict, pk_dict, list_attr)
         write_code(models_path + "nest/src/api/" + module_name + "/service/" + module_name + ".service.ts",
-                   service_generator.content)
+                   service_generator.content, False)
         controller_generator.clean()
         controller_generator.build_class(module_name, class_dict, pk_dict)
         write_code(models_path + "nest/src/api/" + module_name + "/controller/" + module_name + ".controller.ts",
-                   controller_generator.content)
+                   controller_generator.content, False)
         entity_module_generator = EntityModuleGenerator(class_dict["name"])
         entity_module_generator.build(module_name, class_dict["name"])
         entity_module_generator.build_class()
         write_code(models_path + "nest/src/api/" + module_name + "/" + module_name + ".module.ts",
-                   entity_module_generator.content)
+                   entity_module_generator.content, False)
 
         sql_generator.build_class(list_attr, class_dict)
         ddl += sql_generator.content
@@ -79,22 +79,22 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         react_service_generator.clean()
         react_service_generator.build_class(module_name, class_dict, pk_dict)
         write_code(models_path + "react/src/_services/" + module_name + ".service.js",
-                   react_service_generator.content)
+                   react_service_generator.content, False)
 
         create_folder(models_path + "react/src/_events/" + module_name)
 
         react_model_generator.clean()
         react_model_generator.build_class(list_attr)
         write_code(models_path + "react/src/_events/" + module_name + "/model.js",
-                   react_model_generator.content)
+                   react_model_generator.content, False)
         react_find_event_generator.clean()
         react_find_event_generator.build_class(module_name, class_dict)
         write_code(models_path + "react/src/_events/" + module_name + "/find.event.js",
-                   react_find_event_generator.content)
+                   react_find_event_generator.content, False)
         react_create_event_generator.clean()
         react_create_event_generator.build_class(module_name, class_dict)
         write_code(models_path + "react/src/_events/" + module_name + "/create.event.js",
-                   react_create_event_generator.content)
+                   react_create_event_generator.content, False)
 
         create_folder(models_path + "react/src/_hooks/" + module_name)
     
@@ -113,10 +113,10 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     api_module_generator = ApiModuleGenerator()
     api_module_generator.build(modules)
     api_module_generator.build_class()
-    write_code(models_path + "nest/src/api/api.module.ts", api_module_generator.content)
+    write_code(models_path + "nest/src/api/api.module.ts", api_module_generator.content, False)
     copy_essentials(models_path + "nest/src/")
     copy_essential_files(models_path + "nest/src/")
-    write_code(models_path + "db/ddl.sql", ddl)
+    write_code(models_path + "db/ddl.sql", ddl, True)
     copy_react_essential_files(models_path + "react/src/_services/")
     copy_react(models_path + "react/src/")
     copy_react_essential_appjs_files(models_path + "react/src/")
