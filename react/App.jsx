@@ -1,10 +1,10 @@
-import React from 'react';
 import {
   BrowserRouter as Router,
   Routes as Switch,
   Route
 } from "react-router-dom";
 import { router_pages } from './pages/router_pages';
+import NotFoundPage from "./widgets/not-found";
 
 function App() {
 
@@ -20,7 +20,7 @@ function App() {
         );
       }
       return(
-        <Route exact path={`${module.path}`} element={<module.component />} key={`route_${module.path}_${key}`} />
+        <Route exact path={`${module.path}`} element={<module.component />} key={`main_route_${module.path}_${key}`} />
       );
     });
   }
@@ -39,7 +39,7 @@ function App() {
 
 function NotFound() {
   return(
-    <>Not found</>
+    <NotFoundPage />
   );
 }
 

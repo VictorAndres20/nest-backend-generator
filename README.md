@@ -1,8 +1,7 @@
 # Database, Backend NestJS and Frontend React generator
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-- Use models_template.xlsx or a drawDB.io json file
-Models for database representation for ORM
+- Use drawDB.io json file or models_template.xlsx as database representation for ORM
 
 - In  a `.env` file update variable paths
 See `env-example` file
@@ -11,7 +10,7 @@ See `env-example` file
 
 - Create NestJS project with nest cli 
 
-- Replace default src folder in NestJS project with generated one
+- Replace default src folder in NestJS project with generated one (`nest/src`)
 
 - Install npm packages
 ```
@@ -43,6 +42,16 @@ npm install --save exceljs
 npm install --save body-parser
 ```
 
+- Create React project with vite.
+```
+npm create vite@latest front-my-app
+```
+
+- Paste `react/src` generated folder inside your React app folder
+
+- Create root `.env` following `src/env-example`
+
+- Install `react-router-dom`
 
 -----------------------------------------------
 

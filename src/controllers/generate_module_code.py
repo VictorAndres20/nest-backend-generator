@@ -24,7 +24,6 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     create_folder(models_path + "react/src")
     create_folder(models_path + "react/src/_services")
     create_folder(models_path + "react/src/_events")
-    create_folder(models_path + "react/src/widgets")
 
     # First copy React
     copy_react(models_path + "react/src/")
