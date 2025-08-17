@@ -1,0 +1,13 @@
+SERVER_PORT=8000
+JWT_SECRET=secret
+JWT_LICENSE=secret
+
+# ------------------------- DEVELOP ----------------------------------------
+# ------------ Database variables ------------
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASS=secret
+DB_NAME=my-db
+DB_SCHEMA=schema
+ORM_LOG=1

@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 //import { message } from "antd";
-import { downloadPDFFile } from "../../utils/download-file";
+import { downloadPDFFile } from "../../_utils/download-file";
 
 export const useDownloadById = ({ fetchFunc, fileName }) => {
 
