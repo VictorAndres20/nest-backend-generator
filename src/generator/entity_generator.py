@@ -1,6 +1,20 @@
 from typing import List
 
 
+def is_column_null(dict_class: dict):
+    if dict_class["null"] == '':
+        return True
+
+    return False
+
+
+def check_nullish_operator(dict_class: dict):
+    if is_column_null(dict_class):
+        return "?"
+
+    return "!"
+
+
 class EntityGenerator:
 
     def __init__(self):
@@ -20,7 +34,7 @@ class EntityGenerator:
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
             if str(dict_attr["column"]).startswith("foreign"):
-                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from 'src/api/" + \
+                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from '../../" + \
                                       dict_attr["fe_module"] + "/entity/" + \
                                       dict_attr["fe_module"] + ".entity'\n"
 
@@ -54,7 +68,7 @@ class EntityGenerator:
 
     def build_main_content(self, dict_class: dict):
         self.content += "    " + self.decorator + dict_class["column"] + "\n"
-        self.content += "    " + dict_class["name"] + ": " + dict_class["type"] + ";\n\n"
+        self.content += "    " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"] + ";\n\n"
 
     def build_main_content_many_to_one(self, dict_class: dict):
         self.content += "    " + self.decorator + "ManyToOne(() => " + dict_class["foreign_entity"] + ", e => e." + \
@@ -62,12 +76,12 @@ class EntityGenerator:
         self.content += "        " + 'onDelete: "CASCADE",' + "\n"
         self.content += "        " + 'eager: true,' + "\n    })\n"
         self.content += "    " + self.decorator + 'JoinColumn({ name: "' + dict_class["name"] + '" })\n'
-        self.content += "    " + dict_class["name"] + ": " + dict_class["type"] + ";\n\n"
+        self.content += "    " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"]  + ";\n\n"
 
     def build_main_content_one_to_many(self, dict_class: dict):
         self.content += "    " + self.decorator + 'OneToMany(() => ' + dict_class["foreign_entity"] + ', e => e.' + \
                         dict_class["fe_property"] + ')\n'
-        self.content += "    " + dict_class["name"] + ": " + dict_class["type"] + ";\n\n"
+        self.content += "    " + dict_class["name"] + "?: " + dict_class["type"] + ";\n\n"
 
     def build_close(self):
         self.content += "}"
@@ -81,7 +95,7 @@ class EntityGenerator:
         self.dto_content += "\n"
 
     def build_dto_main_content(self, dict_class: dict, type_name: str):
-        self.dto_content += "    readonly " + dict_class["name"] + ": " + type_name + ";\n"
+        self.dto_content += "    readonly " + dict_class["name"] + "?: " + type_name + ";\n"
 
     def build_dto_close(self):
         self.dto_content += "}"

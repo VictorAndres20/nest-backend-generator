@@ -18,7 +18,8 @@ number_types = [
 
 data_types = [
     "DATE",
-    "TIMESTAMP"
+    "TIMESTAMP",
+    "TIMESTAMPTZ"
 ]
 
 boolean_types = [

@@ -37,7 +37,7 @@ class ControllerGenerator:
         self.content += "@Controller('" + endpoint + "')\n"
         self.content += "export class " + dict_class["name"] + "Controller extends BasicRestController<" + \
                         dict_class["name"] + ", " + pk_dict["type"] + ", " + dict_class["name"] + "DTO>{\n\n"
-        self.content += "    constructor(protected service: " + dict_class["name"] + "Service){super();}\n\n"
+        self.content += "    constructor(override readonly service: " + dict_class["name"] + "Service){super();}\n\n"
 
     def build_close(self):
         self.content += "}"

@@ -7,21 +7,21 @@ This is a custom AuthGuard to use as same AuthGuard('jwt'), but with this one yo
 @UseGuards(JwtAuthGuard) // Just like AuthGuard('jwt') but with the ability to set an endpoint public
 export class EmployeeController extends BasicRestController<Employee, string, EmployeeDTO>{
 
-    constructor(protected service: EmployeeBusiness){super();}
+    constructor(protected override service: EmployeeBusiness){super();}
 
     @Get('enterprise/:enterprise')
-    async findAllByEnterprise(@Res() res: Response, @Param("enterprise") enterprise: number): Promise<void>{
+    async findAllByEnterprise(@Res() res: express.Response, @Param("enterprise") enterprise: number): Promise<void>{
         ...
     }
 
     @Get('enterprise/:enterprise/state/:state')
-    async findAllByEnterpriseAndState(@Res() res: Response, @Param("enterprise") enterprise: number, @Param("state") state: number): Promise<void>{
+    async findAllByEnterpriseAndState(@Res() res: express.Response, @Param("enterprise") enterprise: number, @Param("state") state: number): Promise<void>{
         ...
     }
 
     @Get('identification/:identification')
     @PublicEndpoint() // THIS IS PUBLIC ENDPOINT            <------------------------------------------------------------
-    async findByIdentification(@Res() res: Response, @Param("identification") identification: string): Promise<void>{
+    async findByIdentification(@Res() res: express.Response, @Param("identification") identification: string): Promise<void>{
         ...
     }
 }
