@@ -38,6 +38,8 @@ class ServiceGenerator:
         self.build_validation_before_creation_function(entity_dict)
         self.build_base_edition_function(entity_dict, pk_dict, list_attr)
         self.build_validation_before_edition_function(entity_dict)
+        self.build_transformation_before_create_function(entity_dict)
+        self.build_transformation_before_edit_function(entity_dict)
         self.build_close()
         return self.content
 
@@ -57,14 +59,14 @@ class ServiceGenerator:
         self.content += "    ) {super();}\n\n"
 
     def build_find_id_function(self, dict_class: dict, pk_dict: dict):
-        self.content += "    findById(id?: " + pk_dict["type"] + " | null): Promise<" + dict_class["name"] + " | null>{\n"
+        self.content += "    override findById(id?: " + pk_dict["type"] + " | null): Promise<" + dict_class["name"] + " | null>{\n"
         self.content += "        if(id == null) return Promise.resolve(null);\n\n"
         self.content += "        try{\n"
         self.content += "            return this.findOne({where: {" + pk_dict["name"] + ":id}});\n"
         self.content += "        } catch(err){\n            throw new Error((err as Error).message);\n        }\n    }\n\n"
 
     def build_base_creation_function(self, dict_class: dict, list_attr: List):
-        self.content += "    buildBaseCreation(dto: " + dict_class["name"] + "DTO): " + dict_class["name"] + "{\n"
+        self.content += "    override buildBaseCreation(dto: " + dict_class["name"] + "DTO): " + dict_class["name"] + "{\n"
         self.content += "        // Data integrity validations\n"
         self.content += "        if(! dto) throw new Error('DTO empty');\n"
         for i in range(2, len(list_attr)):
@@ -92,7 +94,7 @@ class ServiceGenerator:
         self.content += "        return entity;\n    }\n\n"
 
     def build_validation_before_creation_function(self, dict_class: dict):
-        self.content += "    async dataValidationBeforeCreate(\n"
+        self.content += "    override async dataValidationBeforeCreate(\n"
         self.content += "      // eslint-disable-next-line @typescript-eslint/no-unused-vars\n"
         self.content += "      dto: " + dict_class["name"] + "DTO\n"
         self.content += "    ): Promise<void> {\n"
@@ -102,7 +104,7 @@ class ServiceGenerator:
         self.content += "    }\n\n"
 
     def build_base_edition_function(self, dict_class: dict, pk_dict: dict, list_attr: List):
-        self.content += "    buildBaseEdition(entity: " + dict_class["name"] + ", dto: " + \
+        self.content += "    override buildBaseEdition(entity: " + dict_class["name"] + ", dto: " + \
                         dict_class["name"] + "DTO): " + dict_class["name"] + "{\n"
         self.content += "        //Validations data\n"
         self.content += "        if(! dto) throw new Error('DTO empty');\n"
@@ -124,7 +126,7 @@ class ServiceGenerator:
         self.content += "\n        return entity;\n    }\n\n"
 
     def build_validation_before_edition_function(self, dict_class: dict):
-        self.content += "    async dataValidationBeforeEdit(dto: " + dict_class["name"] + "DTO): Promise<void> {\n"
+        self.content += "    override async dataValidationBeforeEdit(\n"
         self.content += "      // eslint-disable-next-line @typescript-eslint/no-unused-vars\n"
         self.content += "      entity: " + dict_class["name"] + ",\n"
         self.content += "      // eslint-disable-next-line @typescript-eslint/no-unused-vars\n"
@@ -133,6 +135,22 @@ class ServiceGenerator:
         self.content += "        // Input validations for null values that are required\n"
         self.content += "        // For example validate if not exists for specific(s) properties\n"
         self.content += "        // Example same login, same email, same cod, same nit\n"
+        self.content += "    }\n\n"
+
+    def build_transformation_before_create_function(self, dict_class: dict):
+        self.content += "    override dtoTransformBeforeCreate(dto: " + dict_class["name"] + "DTO): " + dict_class["name"] + "DTO {\n"
+        self.content += "      // Use this function to do transformation on dto for safe data\n"
+        self.content += "      // Example:\n"
+        self.content += "      // return { ...dto, name:  dto.name?.trim() };\n"
+        self.content += "      return dto;\n"
+        self.content += "    }\n\n"
+
+    def build_transformation_before_edit_function(self, dict_class: dict):
+        self.content += "    override dtoTransformBeforeEdit(dto: " + dict_class["name"] + "DTO): " + dict_class["name"] + "DTO {\n"
+        self.content += "      // Use this function to do transformation on dto for safe data\n"
+        self.content += "      // Example:\n"
+        self.content += "      // return { ...dto, name:  dto.name?.trim() };\n"
+        self.content += "      return this.dtoTransformBeforeCreate(dto);\n"
         self.content += "    }\n\n"
 
     def build_close(self):
