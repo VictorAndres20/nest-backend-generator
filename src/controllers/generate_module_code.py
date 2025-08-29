@@ -2,6 +2,7 @@ from src.generator.api_module_generator import ApiModuleGenerator
 from src.generator.controller_generator import ControllerGenerator
 from src.generator.entity_generator import EntityGenerator
 from src.generator.entity_module_generator import EntityModuleGenerator
+from src.generator.index_api_generator import IndexApiGenerator
 from src.generator.react_create_event_generator import ReactCreateEventGenerator
 from src.generator.react_find_event_generator import ReactFindEventGenerator
 from src.generator.react_model_generator import ReactModelGenerator
@@ -44,10 +45,12 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     react_create_event_generator = ReactCreateEventGenerator()
 
     modules = []
+    module_names = []
     for i in list_modules:
         module_name = list(i.keys())[0]
         list_attr = i[module_name]
         class_dict = list_attr[0]
+        module_names.append(module_name)
         modules.append({"class": class_dict["name"], "module": module_name})
         pk_dict = list_attr[1]
         create_folder(models_path + "nest/src/api/" + module_name)
@@ -68,6 +71,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         controller_generator.build_class(module_name, class_dict, pk_dict)
         write_code(models_path + "nest/src/api/" + module_name + "/controller/" + module_name + ".controller.ts",
                    controller_generator.content, False)
+
         entity_module_generator = EntityModuleGenerator(class_dict["name"])
         entity_module_generator.build(module_name, class_dict["name"])
         entity_module_generator.build_class()
@@ -116,6 +120,10 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     api_module_generator.build(modules)
     api_module_generator.build_class()
     write_code(models_path + "nest/src/api/api.module.ts", api_module_generator.content, False)
+
+    index_api_generator = IndexApiGenerator(module_names)
+    index_api_generator.build_class()
+    write_code(models_path + "nest/src/api/index.ts", index_api_generator.content, False)
 
     copy_essentials(models_path + "nest/src/")
     copy_essential_files(models_path + "nest/src/")
