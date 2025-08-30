@@ -15,6 +15,39 @@ def check_nullish_operator(dict_class: dict):
     return "!"
 
 
+def check_null_column_definition(dict_class: dict):
+    if is_column_null(dict_class):
+        return "?"
+
+    return "!"
+
+
+def check_null_type(dict_class: dict):
+    if is_column_null(dict_class):
+        return " | null"
+
+    return ""
+
+
+def check_column_decorator_config(dict_class: dict):
+    if dict_class["column"] != "Column":
+        return ""
+
+    db_type = dict_class["db_type"]
+    db_type_formated = db_type.split("(")[0]
+    column_decorator_config = "{ type: '" + db_type_formated + "'"
+
+    if db_type_formated == 'NUMERIC':
+        column_decorator_config += ", scale: 2, precision: 10"
+
+    if is_column_null(dict_class):
+        column_decorator_config += ", nullable: true"
+
+    column_decorator_config += " }"
+
+    return column_decorator_config
+
+
 class EntityGenerator:
 
     def __init__(self):
@@ -67,16 +100,17 @@ class EntityGenerator:
         self.content += "\n"
 
     def build_main_content(self, dict_class: dict):
-        self.content += "    " + self.decorator + dict_class["column"] + "\n"
-        self.content += "    " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"] + ";\n\n"
+        self.content += "    " + self.decorator + dict_class["column"] + "(" + check_column_decorator_config(dict_class) +")\n"
+        self.content += "    " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"] + check_null_type(dict_class) + ";\n\n"
 
     def build_main_content_many_to_one(self, dict_class: dict):
         self.content += "    " + self.decorator + "ManyToOne(() => " + dict_class["foreign_entity"] + ", e => e." + \
                         dict_class["fe_property"] + ", {" + "\n"
+        self.content += "        nullable: true,\n" if is_column_null(dict_class) else ""
         self.content += "        " + 'onDelete: "CASCADE",' + "\n"
         self.content += "        " + 'eager: true,' + "\n    })\n"
         self.content += "    " + self.decorator + 'JoinColumn({ name: "' + dict_class["name"] + '" })\n'
-        self.content += "    " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"]  + ";\n\n"
+        self.content += "    " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"]  + check_null_type(dict_class) + ";\n\n"
 
     def build_main_content_one_to_many(self, dict_class: dict):
         self.content += "    " + self.decorator + 'OneToMany(() => ' + dict_class["foreign_entity"] + ', e => e.' + \

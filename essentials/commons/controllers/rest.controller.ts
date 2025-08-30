@@ -89,13 +89,13 @@ export abstract class BasicRestController<T extends ObjectLiteral, ID, D> {
   }
 
   @Put('edit/:id')
-  async editOne(
+  async updateOne(
     @Res() res: express.Response,
     @Body() dto: D,
     @Param('id') id: ID
   ): Promise<void> {
     try {
-      const data = await this.service.editOne(dto, id);
+      const data = await this.service.updateOne(dto, id);
       res
         .status(HttpStatus.OK)
         .json(new HttpResponse<T>().setData(data).build(true));

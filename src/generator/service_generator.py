@@ -66,7 +66,7 @@ class ServiceGenerator:
         self.content += "        } catch(err){\n            throw new Error((err as Error).message);\n        }\n    }\n\n"
 
     def build_base_creation_function(self, dict_class: dict, list_attr: List):
-        self.content += "    override buildBaseCreation(dto: " + dict_class["name"] + "DTO): " + dict_class["name"] + "{\n"
+        self.content += "    override buildBaseEntityToCreate(dto: " + dict_class["name"] + "DTO): " + dict_class["name"] + "{\n"
         self.content += "        // Data integrity validations\n"
         self.content += "        if(! dto) throw new Error('DTO empty');\n"
         for i in range(2, len(list_attr)):
@@ -104,7 +104,7 @@ class ServiceGenerator:
         self.content += "    }\n\n"
 
     def build_base_edition_function(self, dict_class: dict, pk_dict: dict, list_attr: List):
-        self.content += "    override buildBaseEdition(entity: " + dict_class["name"] + ", dto: " + \
+        self.content += "    override buildBaseEntityToUpdate(entity: " + dict_class["name"] + ", dto: " + \
                         dict_class["name"] + "DTO): " + dict_class["name"] + "{\n"
         self.content += "        //Validations data\n"
         self.content += "        if(! dto) throw new Error('DTO empty');\n"
@@ -126,7 +126,7 @@ class ServiceGenerator:
         self.content += "\n        return entity;\n    }\n\n"
 
     def build_validation_before_edition_function(self, dict_class: dict):
-        self.content += "    override async dataValidationBeforeEdit(\n"
+        self.content += "    override async dataValidationBeforeUpdate(\n"
         self.content += "      // eslint-disable-next-line @typescript-eslint/no-unused-vars\n"
         self.content += "      entity: " + dict_class["name"] + ",\n"
         self.content += "      // eslint-disable-next-line @typescript-eslint/no-unused-vars\n"

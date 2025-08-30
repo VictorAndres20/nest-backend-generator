@@ -7,7 +7,7 @@ This controller provide 4 basic CRUD actions with implementation.
 - FindById
 - FindAll
 - CreateOne
-- EditOne
+- updateOne
 
 ### Implementation
 
@@ -22,9 +22,9 @@ Be careful with generics, you need:
 // Imports
 @Controller('my-example')
 export class MyExampleController extends BasicRestController<
-  Example,
+  MyExample,
   string,
-  ExampleDTO
+  MyExampleDTO
 > {
   //Constructor
 }
@@ -38,9 +38,9 @@ And implement contructor
 // Imports
 @Controller('my-example')
 export class MyExampleController extends BasicRestController<
-  Example,
+  MyExample,
   string,
-  ExampleDTO
+  MyExampleDTO
 > {
   constructor(override readonly service: MyExampleService) {
     super();

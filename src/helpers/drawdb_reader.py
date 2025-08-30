@@ -50,12 +50,12 @@ def get_type_orm_type(table_field_type: str):
 
 def get_column_definition(table_field_default: str, is_primary: bool, is_not_increment_field: bool):
     if not is_primary:
-        return "Column()"
+        return "Column"
 
     if table_field_default is not None or not is_not_increment_field:
-        return "PrimaryGeneratedColumn()"
+        return "PrimaryGeneratedColumn"
 
-    return "PrimaryColumn()"
+    return "PrimaryColumn"
 
 
 def build_list_modules_from_draw_db_io(path: str):

@@ -7,7 +7,7 @@ This abstract Class provides methods to create a service with 4 CRUD operations
 - FindById
 - FindAll
 - CreateOne
-- EditOne
+- updateOne
 - FindAllPaged
   **This works with TypeORM**
 
@@ -65,10 +65,10 @@ export class MyExampleService extends BasicCrudService<
 Then implement methods:
 
 - `findById(T: ID): Promise<T | null>`
-- `buildBaseCreation(dto: D): T`
+- `buildBaseEntityToCreate(dto: D): T`
 - `dataValidationBeforeCreate(dto: D): Promise<void>`
-- `buildBaseEdition(entity: T, dto: D): T`
-- `dataValidationBeforeEdit(dto: D): Promise<void>`
+- `buildBaseEntityToUpdate(entity: T, dto: D): T`
+- `dataValidationBeforeUpdate(dto: D): Promise<void>`
 
 ```typescript
 import { Injectable } from '@nestjs/common';
@@ -89,7 +89,7 @@ export class MyExampleService extends BasicCrudService<
     super();
   }
 
-  findById(id?: string | null): Promise<MyExample | null> {
+  override findById(id?: string | null): Promise<MyExample | null> {
     if (id == null) return Promise.resolve(null);
 
     try {
@@ -99,25 +99,28 @@ export class MyExampleService extends BasicCrudService<
     }
   }
 
-  buildBaseCreation(dto: CalendarDTO): MyExample {
+  override buildBaseEntityToCreate(dto: MyExampleDTO): MyExample {
     //Data integrity validations
     if (!dto) throw new Error('DTO empty');
 
     //Assign data
-    let entity = new Calendar();
+    let entity = new MyExample();
     entity.name = dto.name;
     // ...
 
     return entity;
   }
 
-  async dataValidationBeforeCreate(dto: CalendarDTO): Promise<void> {
+  override async dataValidationBeforeCreate(dto: MyExampleDTO): Promise<void> {
     // Input validations for null values that are required
     // For example validate if not exists for specific(s) properties
     // Example same login, same email, same COD, same NIT
   }
 
-  buildBaseEdition(entity: Calendar, dto: CalendarDTO): Calendar {
+  override buildBaseEntityToUpdate(
+    entity: MyExample,
+    dto: MyExampleDTO
+  ): MyExample {
     //Validations data
     if (!dto) throw new Error('Entity null');
     if (!dto.uuid) throw new Error('Entity id null');
@@ -129,10 +132,24 @@ export class MyExampleService extends BasicCrudService<
     return entity;
   }
 
-  async dataValidationBeforeEdit(dto: CalendarDTO): Promise<void> {
+  override async dataValidationBeforeUpdate(dto: MyExampleDTO): Promise<void> {
     // Input validations for null values that are required
     // For example validate if not exists for specific(s) properties
     // Example same login, same email, same COD, same NIT
+  }
+
+  override dtoTransformBeforeCreate(dto: MyExampleDTO): MyExampleDTO {
+    // Use this function to do transformation on dto for safe data
+    // Example:
+    // return { ...dto, name:  dto.name?.trim() };
+    return dto;
+  }
+
+  override dtoTransformBeforeEdit(dto: MyExampleDTO): MyExampleDTO {
+    // Use this function to do transformation on dto for safe data
+    // Example:
+    // return { ...dto, name:  dto.name?.trim() };
+    return this.dtoTransformBeforeCreate(dto);
   }
 }
 ```
