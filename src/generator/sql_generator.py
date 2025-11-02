@@ -9,6 +9,9 @@ class SQLGenerator:
         self.content = ""
         self.schema: Optional[str] = None
 
+    def get_schema(self):
+        return self.schema + '.' if self.schema is not None else ''
+
     def clean(self):
         self.content = ""
 
@@ -35,7 +38,7 @@ class SQLGenerator:
         self.content += ");\n"
         pks = filter(lambda item: item['column'].startswith('Primary'), list_attr)
         for i in pks:
-            self.content += f"ALTER TABLE {self.schema + '.' if self.schema is not None else ''}" \
+            self.content += f"ALTER TABLE {self.get_schema()}" \
                             f"{dict_class['table_name']} ADD CONSTRAINT " \
                             f"pk_{dict_class['table_name']} PRIMARY KEY({i['name']});\n"
         self.content += "\n"
@@ -43,12 +46,12 @@ class SQLGenerator:
     def build_foriegn(self, list_attr: List, dict_class: dict):
         foreign_keys = filter(lambda item: item['column'] == 'foreign', list_attr)
         for i in foreign_keys:
-            self.content += f"ALTER TABLE {self.schema + '.' if self.schema is not None else ''}" \
+            self.content += f"ALTER TABLE {self.get_schema()}" \
                             f"{dict_class['table_name']} ADD CONSTRAINT " \
                             f"fk_{dict_class['table_name']}_{i['name']} FOREIGN KEY({i['name']}) " \
-                            f"REFERENCES {self.schema + '.' if self.schema is not None else ''}{i['fe_module']}({i['fe_pk']});\n"
+                            f"REFERENCES {self.get_schema()}{i['fe_module']}({i['fe_pk']});\n"
         self.content += "\n"
 
     def build_class_name(self, dict_class: dict):
-        self.content += f"CREATE TABLE {self.schema + '.' if self.schema is not None else ''}" \
+        self.content += f"CREATE TABLE {self.get_schema()}" \
                         f"{dict_class['table_name']}(\n"

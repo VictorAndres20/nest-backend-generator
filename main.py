@@ -7,6 +7,7 @@ models_path = config["MODELS_PATH"]
 file_path = models_path + config["MODELS_FILE"]
 
 db_schema = config["DB_SCHEMA"]
+db_schema = db_schema.strip().lower() if db_schema is not None and db_schema != '' else None
 
 generate_foreign_keys = True if config["GENERATE_FOREIGN_KEYS"] is not None else False
 

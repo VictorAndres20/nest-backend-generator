@@ -37,7 +37,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     ddl = ''
 
     list_modules = build_list_modules_from_draw_db_io(file_path) if file_path.endswith(".json") else read_excel_to_list_dict(file_path)
-    print(list_modules)
+    # print(list_modules)
 
     entity_generator = EntityGenerator()
     service_generator = ServiceGenerator()
@@ -157,6 +157,20 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
     copy_essentials(models_path + "nest/src/")
     copy_essential_files(models_path + "nest/src/")
+
+    # Generate DB relations
+
+    if generate_sql_relations:
+        ddl += "\n--- Foreign Keys\n"
+        sql_generator = SQLGenerator()
+        sql_generator.schema = db_schema
+        for i in list_modules:
+            module_name = list(i.keys())[0]
+            list_attr = i[module_name]
+            class_dict = list_attr[0]
+            sql_generator.build_foriegn(list_attr, class_dict)
+            ddl += sql_generator.content
+            sql_generator.clean()
 
     # Write DB DDL
 
