@@ -9,7 +9,8 @@ from src.generator.react_model_generator import ReactModelGenerator
 from src.generator.react_service_generator import ReactServiceGenerator
 from src.generator.service_generator import ServiceGenerator
 from src.generator.sql_generator import SQLGenerator
-from src.helpers.copy_files import copy_essential_files, copy_react_essential_files, copy_react_essential_appjs_files
+from src.helpers.copy_files import copy_essential_files, copy_react_essential_files, copy_react_essential_appjs_files, \
+    copy_nest_essential_env_files
 from src.helpers.drawdb_reader import build_list_modules_from_draw_db_io
 from src.helpers.excel_reader import read_excel_to_list_dict
 from src.helpers.folder_handler import create_folder, copy_essentials, copy_react
@@ -157,6 +158,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
     copy_essentials(models_path + "nest/src/")
     copy_essential_files(models_path + "nest/src/")
+    copy_nest_essential_env_files(models_path + "nest/")
 
     # Generate DB relations
 
