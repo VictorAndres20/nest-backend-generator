@@ -13,7 +13,7 @@ from src.helpers.copy_files import copy_essential_files, copy_react_essential_fi
     copy_nest_essential_env_files
 from src.helpers.drawdb_reader import build_list_modules_from_draw_db_io
 from src.helpers.excel_reader import read_excel_to_list_dict
-from src.helpers.folder_handler import create_folder, copy_essentials, copy_react
+from src.helpers.folder_handler import create_folder, copy_essentials, copy_react, get_module_name
 from src.helpers.write_file import write_code
 
 
@@ -55,8 +55,13 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     module_names = []
     for i in list_modules:
         module_name = list(i.keys())[0]
+
         list_attr = i[module_name]
         class_dict = list_attr[0]
+
+        # Rename module_name
+        module_name = get_module_name(module_name)
+
         module_names.append(module_name)
         modules.append({"class": class_dict["name"], "module": module_name})
         pk_dict = list_attr[1]

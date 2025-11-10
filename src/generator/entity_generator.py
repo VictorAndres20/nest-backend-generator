@@ -1,5 +1,7 @@
 from typing import List
 
+from src.helpers.folder_handler import get_module_name
+
 
 def is_column_null(dict_class: dict):
     if dict_class["null"] == '':
@@ -67,9 +69,10 @@ class EntityGenerator:
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
             if str(dict_attr["column"]).startswith("foreign"):
+                fe_module = get_module_name(dict_attr["fe_module"])
                 self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from '../../" + \
-                                      dict_attr["fe_module"] + "/entity/" + \
-                                      dict_attr["fe_module"] + ".entity';\n"
+                                      fe_module + "/entity/" + \
+                                      fe_module + ".entity';\n"
 
     def build_class(self, list_attr: List):
         self.build_headers(list_attr)

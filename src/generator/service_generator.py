@@ -1,5 +1,7 @@
 from typing import List
 
+from src.helpers.folder_handler import get_module_name
+from src.helpers.tp_pascal_case import to_camel_case
 
 SERVICE_BASE_IMPORTS = "import { Injectable } from '@nestjs/common';\n" \
                        "import { BasicCrudService } from '../../../commons/services/crud.service';\n" \
@@ -26,9 +28,10 @@ class ServiceGenerator:
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
             if str(dict_attr["column"]) == "foreign":
+                fe_module = get_module_name(dict_attr["fe_module"])
                 self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from '../../" + \
-                                      dict_attr["fe_module"] + "/entity/" + \
-                                      dict_attr["fe_module"] + ".entity';\n"
+                                      fe_module + "/entity/" + \
+                                      fe_module + ".entity';\n"
 
     def build_class(self, module_name: str, entity_dict: dict, pk_dict: dict, list_attr: List):
         self.build_additional_imports(module_name, entity_dict["name"])
@@ -78,12 +81,13 @@ class ServiceGenerator:
             col = str(attr_dict["column"])
             if col != "foreign_ref":
                 if col == "foreign":
-                    self.content += "    const " + attr_dict["fe_module"] + " = new " + \
+                    foreign_variable_name = to_camel_case(attr_dict["fe_module"])
+                    self.content += "    const " + foreign_variable_name + " = new " + \
                                     attr_dict["foreign_entity"] + "();\n"
-                    self.content += "    " + attr_dict["fe_module"] + "." + attr_dict["fe_pk"]\
+                    self.content += "    " + foreign_variable_name + "." + attr_dict["fe_pk"]\
                                     + " = dto." + attr_dict["name"] + ";\n"
                     self.content += "    entity." + attr_dict["name"] + " = " + \
-                                    attr_dict["fe_module"] + ";\n"
+                                    foreign_variable_name + ";\n"
                 else:
                     self.content += "    entity." + attr_dict["name"] + " = dto." + attr_dict["name"] + ";\n"
         self.content += "    return entity;\n  }\n\n"
@@ -110,10 +114,11 @@ class ServiceGenerator:
             col = str(attr_dict["column"])
             if col != "foreign_ref":
                 if col == "foreign":
+                    foreign_variable_name = to_camel_case(attr_dict["fe_module"])
                     self.content += "    if(dto." + attr_dict["name"] + " != null) {\n"
-                    self.content += "      const " + attr_dict["fe_module"] + " = new " + attr_dict["foreign_entity"] + "();\n"
-                    self.content += "      " + attr_dict["fe_module"] + "." + attr_dict["fe_pk"] + " = dto." + attr_dict["name"] + ";\n"
-                    self.content += "      entity." + attr_dict["name"] + " = " + attr_dict["fe_module"] + ";\n"
+                    self.content += "      const " + foreign_variable_name + " = new " + attr_dict["foreign_entity"] + "();\n"
+                    self.content += "      " + foreign_variable_name + "." + attr_dict["fe_pk"] + " = dto." + attr_dict["name"] + ";\n"
+                    self.content += "      entity." + attr_dict["name"] + " = " + foreign_variable_name + ";\n"
                     self.content += "    }\n\n"
                 else:
                     self.content += "    entity." + attr_dict["name"] + " = dto." + attr_dict["name"] + \
