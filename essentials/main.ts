@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.enableCors({
     origin: '*',
     methods: 'OPTIONS,GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -12,9 +13,14 @@ async function bootstrap() {
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
-  app.use(bodyParser.json({ limit: '50mb' }));
-  app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-  app.setGlobalPrefix('api');
+
+  const bodyParserLimitMb = process.env.BODY_PARSER_LIMIT_MB || '20mb';
+  app.use(bodyParser.json({ limit: bodyParserLimitMb }));
+  app.use(bodyParser.urlencoded({ limit: bodyParserLimitMb, extended: true }));
+
+  const globalPrefix = process.env.GLOBAL_PREFIX || '';
+  app.setGlobalPrefix(globalPrefix);
+
   await app.listen(Number(process.env.SERVER_PORT));
 }
 bootstrap();

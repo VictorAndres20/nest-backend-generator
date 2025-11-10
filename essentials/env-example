@@ -1,6 +1,8 @@
 SERVER_PORT=8000
 JWT_SECRET=secret
 JWT_LICENSE=secret
+BODY_PARSER_LIMIT_MB=20mb
+GLOBAL_PREFIX=
 
 # ------------------------- DEVELOP ----------------------------------------
 # ------------ Database variables ------------
