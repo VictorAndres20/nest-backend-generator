@@ -14,6 +14,7 @@ from src.helpers.copy_files import copy_essential_files, copy_react_essential_fi
     copy_nest_essential_env_files
 from src.helpers.drawdb_reader import build_list_modules_from_draw_db_io
 from src.helpers.excel_reader import read_excel_to_list_dict
+from src.helpers.file_handler import create_empty_file
 from src.helpers.folder_handler import create_folder, copy_essentials, copy_react, get_module_name
 from src.helpers.write_file import write_code
 
@@ -26,6 +27,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     create_folder(models_path + "nest/src")
     create_folder(models_path + "nest/src/api")
     create_folder(models_path + "nest/src/assets")
+    create_empty_file(models_path + "nest/src/assets/.gitkeep")
 
     create_folder(models_path + "db")
 
