@@ -1,12 +1,15 @@
+BASE_INDEX_API_IMPORTS = "export * from './api.module';"
+
+
 class IndexApiGenerator:
 
     def __init__(self, module_list: list):
         self.module_list = module_list
-        self.main_export = "export * from './api.module.ts';"
+        self.main_export = BASE_INDEX_API_IMPORTS
         self.content = ""
 
     def clean(self):
-        self.main_export = "export * from './api.module.ts';"
+        self.main_export = BASE_INDEX_API_IMPORTS
         self.content = ""
 
     def build_class(self):
