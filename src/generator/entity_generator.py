@@ -5,9 +5,9 @@ from src.helpers.folder_handler import get_module_name
 
 def is_column_null(dict_class: dict):
     if dict_class["null"] == '':
-        return True
+        return False
 
-    return False
+    return True
 
 
 def check_nullish_operator(dict_class: dict):
@@ -132,7 +132,7 @@ class EntityGenerator:
         self.dto_content += "\n"
 
     def build_dto_main_content(self, dict_class: dict, type_name: str):
-        self.dto_content += "  readonly " + dict_class["name"] + "?: " + type_name + ";\n"
+        self.dto_content += "  readonly " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + type_name + ";\n"
 
     def build_dto_close(self):
         self.dto_content += "}"
