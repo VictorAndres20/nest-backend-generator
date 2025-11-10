@@ -17,7 +17,7 @@ import { ApiModule } from './api/api.module';
       username: process.env.DB_USER,
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
-      //schema: process.env.DB_SCHEMA, //Uncomment it if you use Schema
+      schema: process.env.DB_SCHEMA || 'public',
       synchronize: false,
       logging: process.env.ORM_LOG ? true : false, // In production put it false
       autoLoadEntities: true,
