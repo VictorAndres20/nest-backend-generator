@@ -14,7 +14,7 @@ class ControllerGenerator:
     def build_additional_imports(self, module_name: str, entity_name: str):
         self.imports += "import { " + entity_name + " } from '../entity/" + module_name + ".entity';\n"
         self.imports += "import { " + entity_name + "DTO } from '../entity/" + module_name + ".dto';\n"
-        self.imports += "import { " + entity_name + "Service } from '../service/" + module_name + ".service';\n"
+        self.imports += "import { " + entity_name + "Business } from '../service/" + module_name + ".business';\n"
 
     def clean(self):
         self.imports = BASE_IMPORTS
@@ -37,7 +37,7 @@ class ControllerGenerator:
         self.content += "export class " + dict_class["name"] + "Controller extends BasicRestController<\n  " + \
                         dict_class["name"] + ",\n  " + pk_dict["type"] + ",\n  " + dict_class["name"] + "DTO\n> {\n"
         self.content += "  constructor(override readonly service: " + dict_class["name"] + \
-                        "Service) {\n    super();\n  }\n\n  // Some new custom endpoints can be placed here\n"
+                        "Business) {\n    super();\n  }\n\n  // Some new custom endpoints can be placed here\n"
 
     def build_close(self):
         self.content += "}"

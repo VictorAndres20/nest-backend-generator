@@ -1,4 +1,5 @@
 from src.generator.api_module_generator import ApiModuleGenerator
+from src.generator.business_generator import BusinessGenerator
 from src.generator.controller_generator import ControllerGenerator
 from src.generator.entity_generator import EntityGenerator
 from src.generator.entity_module_generator import EntityModuleGenerator
@@ -43,9 +44,12 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
     entity_generator = EntityGenerator()
     service_generator = ServiceGenerator()
+    business_generator = BusinessGenerator()
     controller_generator = ControllerGenerator()
+
     sql_generator = SQLGenerator()
     sql_generator.schema = db_schema
+
     react_service_generator = ReactServiceGenerator()
     react_model_generator = ReactModelGenerator()
     react_find_event_generator = ReactFindEventGenerator()
@@ -88,6 +92,12 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         service_generator.build_class(module_name, class_dict, pk_dict, list_attr)
         write_code(models_path + "nest/src/api/" + module_name + "/service/" + module_name + ".service.ts",
                    service_generator.content, False)
+
+        # Generate and write Nest business file
+        business_generator.clean()
+        business_generator.build_class(module_name, class_dict, pk_dict, list_attr)
+        write_code(models_path + "nest/src/api/" + module_name + "/service/" + module_name + ".business.ts",
+                   business_generator.content, False)
 
         # Generate and write Nest controller
 

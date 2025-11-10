@@ -12,9 +12,13 @@ class EntityModuleGenerator(ModuleGenerator):
                                  + module_name + ".entity';")
         self.main_imports.append("import { " + entity_class_name + "Service } from './service/"
                                  + module_name + ".service';")
+        self.main_imports.append("import { " + entity_class_name + "Business } from './service/"
+                                 + module_name + ".business';")
         self.main_imports.append("import { " + entity_class_name + "Controller } from './controller/"
                                  + module_name + ".controller';")
         self.imports.append("TypeOrmModule.forFeature([" + entity_class_name + "])")
         self.controllers.append(entity_class_name + "Controller")
         self.providers.append(entity_class_name + "Service")
+        self.providers.append(entity_class_name + "Business")
         self.exports.append(entity_class_name + "Service")
+        self.exports.append(entity_class_name + "Business")
