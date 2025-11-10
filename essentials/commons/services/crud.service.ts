@@ -22,7 +22,7 @@ export abstract class BasicCrudService<T extends ObjectLiteral, ID, D> {
 
   abstract dataValidationBeforeCreate(dto: D): Promise<void>;
 
-  abstract dtoTransformBeforeEdit(dto: D): D;
+  abstract dtoTransformBeforeUpdate(dto: D): D;
 
   abstract buildBaseEntityToUpdate(entity: T, dto: D): T;
 
@@ -68,7 +68,7 @@ export abstract class BasicCrudService<T extends ObjectLiteral, ID, D> {
       if (entity == null) {
         throw new Error('Entity not found for edition');
       }
-      const dtoToUpdate = this.dtoTransformBeforeEdit(dto);
+      const dtoToUpdate = this.dtoTransformBeforeUpdate(dto);
       await this.dataValidationBeforeUpdate(entity, dtoToUpdate);
       return this.repo.save(this.buildBaseEntityToUpdate(entity, dtoToUpdate));
     } catch (err) {

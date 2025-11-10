@@ -1,5 +1,17 @@
 import shutil
 import os
+from dotenv import dotenv_values
+
+config = dotenv_values(".env")
+
+
+def get_module_name(module_name: str):
+    separator = config["MODULE_NOMENCLATURE_SEPARATOR"]
+
+    if separator is None or separator == "_":
+        return module_name
+
+    return module_name.replace("_", separator)
 
 
 def create_folder(path):

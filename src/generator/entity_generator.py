@@ -110,12 +110,12 @@ class EntityGenerator:
         self.content += "    " + 'onDelete: "CASCADE",' + "\n"
         self.content += "    " + 'eager: true,' + "\n  })\n"
         self.content += "  " + self.decorator + 'JoinColumn({ name: "' + dict_class["name"] + '" })\n'
-        self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"]  + check_null_type(dict_class) + ";\n\n"
+        self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["foreign_entity"]  + check_null_type(dict_class) + ";\n\n"
 
     def build_main_content_one_to_many(self, dict_class: dict):
         self.content += "  " + self.decorator + 'OneToMany(() => ' + dict_class["foreign_entity"] + ', (e) => e.' + \
                         dict_class["fe_property"] + ')\n'
-        self.content += "  " + dict_class["name"] + "?: " + dict_class["type"] + ";\n\n"
+        self.content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + ";\n\n"
 
     def build_close(self):
         self.content += "}"

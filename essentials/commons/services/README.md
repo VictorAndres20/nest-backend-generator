@@ -69,6 +69,8 @@ Then implement methods:
 - `dataValidationBeforeCreate(dto: D): Promise<void>`
 - `buildBaseEntityToUpdate(entity: T, dto: D): T`
 - `dataValidationBeforeUpdate(dto: D): Promise<void>`
+- `dtoTransformBeforeCreate(dto: D): D;`
+- `dtoTransformBeforeUpdate(dto: D): D;`
 
 ```typescript
 import { Injectable } from '@nestjs/common';
@@ -145,7 +147,7 @@ export class MyExampleService extends BasicCrudService<
     return dto;
   }
 
-  override dtoTransformBeforeEdit(dto: MyExampleDTO): MyExampleDTO {
+  override dtoTransformBeforeUpdate(dto: MyExampleDTO): MyExampleDTO {
     // Use this function to do transformation on dto for safe data
     // Example:
     // return { ...dto, name:  dto.name?.trim() };

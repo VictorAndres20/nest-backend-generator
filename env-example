@@ -1,4 +1,5 @@
 # Create a .env file or rename this one
+MODULE_NOMENCLATURE_SEPARATOR=-
 MODELS_PATH=/home/vic/models/
 # MODELS_FILE=models_template.xlsx
 # Set a json file to use a drawDB json file!
