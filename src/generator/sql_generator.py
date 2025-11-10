@@ -25,7 +25,7 @@ class SQLGenerator:
         self.build_close(list_attr, dict_class)
 
     def build_main_content(self, dict_class: dict, idx: int, total_data: int):
-        self.content += f"    {dict_class['name']} {dict_class['db_type']}"
+        self.content += f"    \"{dict_class['name']}\" {dict_class['db_type']}"
         if dict_class["default_value"] != '':
             self.content += f" {self.default} {dict_class['default_value']}"
         if dict_class["null"] == '':
@@ -40,7 +40,7 @@ class SQLGenerator:
         for i in pks:
             self.content += f"ALTER TABLE {self.get_schema()}" \
                             f"{dict_class['table_name']} ADD CONSTRAINT " \
-                            f"pk_{dict_class['table_name']} PRIMARY KEY({i['name']});\n"
+                            f"pk_{dict_class['table_name']} PRIMARY KEY(\"{i['name']}\");\n"
         self.content += "\n"
         
     def build_foriegn(self, list_attr: List, dict_class: dict):
@@ -48,8 +48,8 @@ class SQLGenerator:
         for i in foreign_keys:
             self.content += f"ALTER TABLE {self.get_schema()}" \
                             f"{dict_class['table_name']} ADD CONSTRAINT " \
-                            f"fk_{dict_class['table_name']}_{i['name']} FOREIGN KEY({i['name']}) " \
-                            f"REFERENCES {self.get_schema()}{i['fe_module']}({i['fe_pk']});\n"
+                            f"fk_{dict_class['table_name']}_{i['name']} FOREIGN KEY(\"{i['name']}\") " \
+                            f"REFERENCES {self.get_schema()}{i['fe_module']}(\"{i['fe_pk']}\");\n"
         self.content += "\n"
 
     def build_class_name(self, dict_class: dict):

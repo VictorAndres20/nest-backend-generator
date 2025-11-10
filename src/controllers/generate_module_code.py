@@ -24,6 +24,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     create_folder(models_path + "nest")
     create_folder(models_path + "nest/src")
     create_folder(models_path + "nest/src/api")
+    create_folder(models_path + "nest/src/assets")
 
     create_folder(models_path + "db")
 
