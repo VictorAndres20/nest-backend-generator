@@ -35,28 +35,28 @@ class ModuleGenerator:
         self.content += "@Module({\n"
 
     def build_imports(self):
-        self.content += "    imports: [\n"
+        self.content += "  imports: [\n"
         for i in self.imports:
-            self.content += "        " + str(i) + ",\n"
-        self.content += "    ],\n"
+            self.content += "    " + str(i) + ",\n"
+        self.content += "  ],\n"
 
     def build_controllers(self):
-        self.content += "    controllers: [\n"
+        self.content += "  controllers: [\n"
         for i in self.controllers:
-            self.content += "        " + str(i) + ",\n"
-        self.content += "    ],\n"
+            self.content += "    " + str(i) + ",\n"
+        self.content += "  ],\n"
 
     def build_providers(self):
-        self.content += "    providers: [\n"
+        self.content += "  providers: [\n"
         for i in self.providers:
-            self.content += "        " + str(i) + ",\n"
-        self.content += "    ],\n"
+            self.content += "    " + str(i) + ",\n"
+        self.content += "  ],\n"
 
     def build_exports(self):
-        self.content += "    exports: [\n"
+        self.content += "  exports: [\n"
         for i in self.exports:
-            self.content += "        " + str(i) + ",\n"
-        self.content += "    ],\n"
+            self.content += "    " + str(i) + ",\n"
+        self.content += "  ],\n"
 
     def build_close(self):
         self.content += "})\nexport class " + self.name + "Module{}"

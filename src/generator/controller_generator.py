@@ -1,11 +1,14 @@
+BASE_IMPORTS = "import {\n  Controller,\n  // Get,\n  // Post,\n  // Body,\n  // HttpException,\n  // Param,\n  // UseGuards,\n} " \
+                       "from '@nestjs/common';\n// import { HttpResponse } " \
+                       "from '../../../commons/responses/http_response';" \
+                       "\nimport { BasicRestController } from '../../../commons/controllers/rest.controller';" \
+                       "\n// import { AuthGuard } from '@nestjs/passport';\n"
+
+
 class ControllerGenerator:
 
     def __init__(self):
-        self.imports = "import { Controller, Get, Post, Body, HttpException, Param, UseGuards } " \
-                       "from '@nestjs/common';\nimport { HttpResponse } " \
-                       "from '../../../commons/responses/http_response';" \
-                       "\nimport { BasicRestController } from '../../../commons/controllers/rest.controller';" \
-                       "\nimport { AuthGuard } from '@nestjs/passport';\n"
+        self.imports = BASE_IMPORTS
         self.content = ""
 
     def build_additional_imports(self, module_name: str, entity_name: str):
@@ -14,11 +17,7 @@ class ControllerGenerator:
         self.imports += "import { " + entity_name + "Service } from '../service/" + module_name + ".service';\n"
 
     def clean(self):
-        self.imports = "import { Controller, Get, Post, Body, HttpException, Param, UseGuards } " \
-                       "from '@nestjs/common';\nimport { HttpResponse } " \
-                       "from '../../../commons/responses/http_response';" \
-                       "\nimport { BasicRestController } from '../../../commons/controllers/rest.controller';" \
-                       "\nimport { AuthGuard } from '@nestjs/passport';\n"
+        self.imports = BASE_IMPORTS
         self.content = ""
 
     def build_class(self, module_name: str, entity_dict: dict, pk_dict: dict):
@@ -35,9 +34,10 @@ class ControllerGenerator:
     def build_class_name(self, module_name: str, dict_class: dict, pk_dict: dict):
         endpoint = module_name.replace("_", "-")
         self.content += "@Controller('" + endpoint + "')\n"
-        self.content += "export class " + dict_class["name"] + "Controller extends BasicRestController<" + \
-                        dict_class["name"] + ", " + pk_dict["type"] + ", " + dict_class["name"] + "DTO>{\n\n"
-        self.content += "    constructor(override readonly service: " + dict_class["name"] + "Service){super();}\n\n"
+        self.content += "export class " + dict_class["name"] + "Controller extends BasicRestController<\n  " + \
+                        dict_class["name"] + ",\n  " + pk_dict["type"] + ",\n  " + dict_class["name"] + "DTO\n> {\n"
+        self.content += "  constructor(override readonly service: " + dict_class["name"] + \
+                        "Service) {\n    super();\n  }\n\n  // Some new custom endpoints can be placed here\n"
 
     def build_close(self):
         self.content += "}"
