@@ -1,4 +1,5 @@
-//npm install bcrypt
+// npm install bcrypt
+// npm i --save-dev @types/bcrypt
 import * as bcrypt from 'bcrypt';
 
 const saltOrRounds = 10;
