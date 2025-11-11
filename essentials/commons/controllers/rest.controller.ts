@@ -8,7 +8,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { BasicCrudService } from '../services/crud.service';
-import { HttpResponse } from '../responses/http_response';
+import { HttpResponse } from '../responses/http-response';
 import express from 'express';
 import { ObjectLiteral } from 'typeorm';
 

@@ -1,6 +1,6 @@
 BASE_IMPORTS = "import {\n  Controller,\n  // Get,\n  // Post,\n  // Body,\n  // HttpException,\n  // Param,\n  // UseGuards,\n} " \
                        "from '@nestjs/common';\n// import { HttpResponse } " \
-                       "from '../../../commons/responses/http_response';" \
+                       "from '../../../commons/responses/http-response';" \
                        "\nimport { BasicRestController } from '../../../commons/controllers/rest.controller';" \
                        "\n// import { AuthGuard } from '@nestjs/passport';\n"
 
