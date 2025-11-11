@@ -77,7 +77,7 @@ export abstract class BasicCrudService<T extends ObjectLiteral, ID, D> {
   }
 
   async findAllPaged(page = 0, limit = 8): Promise<[T[], number]> {
-    return await this.repo.findAndCount({ skip: page, take: limit });
+    return await this.repo.findAndCount({ skip: page * limit, take: limit });
   }
 
   protected _buildForeignEntityFromIdCallback<FT>(
