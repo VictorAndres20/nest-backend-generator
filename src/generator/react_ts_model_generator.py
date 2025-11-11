@@ -1,7 +1,7 @@
 from typing import List
 
 
-class ReactModelGenerator:
+class ReactTSModelGenerator:
 
     def __init__(self):
         self.imports = ""
@@ -21,9 +21,9 @@ class ReactModelGenerator:
         self.content += self.imports
 
     def build_validate_function(self, list_attr: List):
-        self.content += "export const validate" + list_attr[0]["name"] + " = (body) => {\n" +\
+        self.content += "export const validate" + list_attr[0]["name"] + "DTO = (body) => {\n" +\
                         "  //const {  } = body;\n" +\
-                        "}\n\n"
+                        "};\n\n"
 
     def build_transform_function(self, list_attr: List):
         self.content += "export const transform" + list_attr[0]["name"] + "Entity = (entity) => {\n"
@@ -34,7 +34,7 @@ class ReactModelGenerator:
                 self.content += "  newEnt." + dict_attr["name"] + " = newEnt." +\
                                  dict_attr["name"] + "?." + dict_attr["fe_pk"] + ";\n"
         self.content += "  return newEnt;\n"
-        self.content += "}\n\n"
+        self.content += "};\n\n"
 
     def build_empty_function(self, list_attr: List):
         self.content += "export const buildEmpty" + list_attr[0]["name"] + "Entity = () => {\n"
@@ -44,4 +44,4 @@ class ReactModelGenerator:
             if dict_attr["type"] != "entity" and not str(dict_attr["column"]).startswith("foreign_ref"):
                 self.content += "    " + dict_attr["name"] + ": '',\n"
         self.content += "  };\n"
-        self.content += "}\n\n"
+        self.content += "};\n\n"

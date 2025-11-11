@@ -8,14 +8,19 @@ from src.generator.react_create_event_generator import ReactCreateEventGenerator
 from src.generator.react_find_event_generator import ReactFindEventGenerator
 from src.generator.react_model_generator import ReactModelGenerator
 from src.generator.react_service_generator import ReactServiceGenerator
+from src.generator.react_ts_create_event_generator import ReactTSCreateEventGenerator
+from src.generator.react_ts_find_event_generator import ReactTSFindEventGenerator
+from src.generator.react_ts_model_generator import ReactTSModelGenerator
+from src.generator.react_ts_service_generator import ReactTSServiceGenerator
 from src.generator.service_generator import ServiceGenerator
 from src.generator.sql_generator import SQLGenerator
 from src.helpers.copy_files import copy_essential_files, copy_react_essential_files, copy_react_essential_appjs_files, \
-    copy_nest_essential_env_files
+    copy_nest_essential_env_files, copy_react_ts_essential_files, copy_react_ts_essential_app_files
 from src.helpers.drawdb_reader import build_list_modules_from_draw_db_io
 from src.helpers.excel_reader import read_excel_to_list_dict
 from src.helpers.file_handler import create_empty_file
-from src.helpers.folder_handler import create_folder, copy_essentials, copy_react, get_module_name
+from src.helpers.folder_handler import create_folder, copy_essentials, copy_react, get_module_name, copy_react_ts, \
+    copy_react_ts_api_client
 from src.helpers.write_file import write_code
 
 
@@ -33,9 +38,18 @@ REACT_JS_SRC_EVENTS_PATH = f"{REACT_JS_SRC_PATH}/_events"
 REACT_JS_SRC_HOOKS_PATH = f"{REACT_JS_SRC_PATH}/_hooks"
 
 
+REACT_TS_ROOT_PATH = "react-ts"
+REACT_TS_SRC_PATH = f"{REACT_TS_ROOT_PATH}/src"
+REACT_TS_SRC_API_CLIENT_PATH = f"{REACT_TS_SRC_PATH}/_api-client"
+REACT_TS_SRC_SERVICES_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_services"
+REACT_TS_SRC_EVENTS_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_events"
+REACT_TS_SRC_HOOKS_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_hooks"
+REACT_TS_SRC_SERVICES_COMMONS_PATH = f"{REACT_TS_SRC_SERVICES_PATH}/_commons"
+
+
 def generate_module(models_path: str, file_path: str, db_schema: str, generate_sql_relations: bool = False):
 
-    # Create base folders
+    # Create base Nest folders
 
     create_folder(models_path + NEST_ROOT_PATH)
     create_folder(models_path + NEST_SRC_PATH)
@@ -43,33 +57,57 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     create_folder(models_path + NEST_SRC_ASSETS_PATH)
     create_empty_file(models_path + NEST_SRC_ASSETS_PATH + "/.gitkeep")
 
+    # Create base DB folders
+
     create_folder(models_path + DB_PATH)
+
+    # Create base React JS folders
 
     create_folder(models_path + REACT_JS_ROOT_PATH)
     create_folder(models_path + REACT_JS_SRC_PATH)
     create_folder(models_path + REACT_JS_SRC_SERVICES_PATH)
     create_folder(models_path + REACT_JS_SRC_EVENTS_PATH)
 
-    # First copy React
+    # Create base React TS folders
+
+    create_folder(models_path + REACT_TS_ROOT_PATH)
+    create_folder(models_path + REACT_TS_SRC_PATH)
+    create_folder(models_path + REACT_TS_SRC_API_CLIENT_PATH)
+    create_folder(models_path + REACT_TS_SRC_SERVICES_PATH)
+    create_folder(models_path + REACT_TS_SRC_EVENTS_PATH)
+    create_folder(models_path + REACT_TS_SRC_SERVICES_COMMONS_PATH)
+
+    # First copy React JS and React TS
     copy_react(models_path + f"{REACT_JS_SRC_PATH}/")
+    copy_react_ts(models_path + f"{REACT_TS_SRC_PATH}/")
+    copy_react_ts_api_client(models_path + f"{REACT_TS_SRC_API_CLIENT_PATH}/")
 
     ddl = ''
 
     list_modules = build_list_modules_from_draw_db_io(file_path) if file_path.endswith(".json") else read_excel_to_list_dict(file_path)
     # print(list_modules)
 
+    # Nest generators
     entity_generator = EntityGenerator()
     service_generator = ServiceGenerator()
     business_generator = BusinessGenerator()
     controller_generator = ControllerGenerator()
 
+    # SQL generator
     sql_generator = SQLGenerator()
     sql_generator.schema = db_schema
 
+    # React JS generators
     react_service_generator = ReactServiceGenerator()
     react_model_generator = ReactModelGenerator()
     react_find_event_generator = ReactFindEventGenerator()
     react_create_event_generator = ReactCreateEventGenerator()
+
+    # React TS generators
+    react_ts_service_generator = ReactTSServiceGenerator()
+    react_ts_model_generator = ReactTSModelGenerator()
+    react_ts_find_event_generator = ReactTSFindEventGenerator()
+    react_ts_create_event_generator = ReactTSCreateEventGenerator()
 
     modules = []
     module_names = []
@@ -110,6 +148,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
                    service_generator.content, False)
 
         # Generate and write Nest business file
+
         business_generator.clean()
         business_generator.build_class(module_name, class_dict, pk_dict, list_attr)
         write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/service/" + module_name + ".business.ts",
@@ -171,6 +210,38 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
         create_folder(models_path + f"{REACT_JS_SRC_HOOKS_PATH}/" + module_name)
 
+        # Generate and write React TS entity service
+
+        react_ts_service_generator.clean()
+        react_ts_service_generator.build_class(module_name, class_dict, pk_dict)
+        write_code(models_path + f"{REACT_TS_SRC_SERVICES_PATH}/" + module_name + ".service.ts",
+                   react_ts_service_generator.content, False)
+
+        # Create React TS event folder
+
+        create_folder(models_path + f"{REACT_TS_SRC_EVENTS_PATH}/" + module_name)
+
+        # Generate and write React TS entity model
+
+        react_ts_model_generator.clean()
+        react_ts_model_generator.build_class(list_attr)
+        write_code(models_path + f"{REACT_TS_SRC_EVENTS_PATH}/" + module_name + "/model.ts",
+                   react_ts_model_generator.content, False)
+
+        # Generate and write React TS entity find event
+
+        react_ts_find_event_generator.clean()
+        react_ts_find_event_generator.build_class(module_name, class_dict)
+        write_code(models_path + f"{REACT_TS_SRC_EVENTS_PATH}/" + module_name + "/query.event.ts",
+                   react_ts_find_event_generator.content, False)
+
+        # Generate and write React TS entity create event
+
+        react_ts_create_event_generator.clean()
+        react_ts_create_event_generator.build_class(module_name, class_dict)
+        write_code(models_path + f"{REACT_TS_SRC_EVENTS_PATH}/" + module_name + "/mutation.event.ts",
+                   react_ts_create_event_generator.content, False)
+
     # ######### After iterate all entities operations:
 
     # Generate and write Nest API module
@@ -214,3 +285,8 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
     copy_react_essential_files(models_path + f"{REACT_JS_SRC_SERVICES_PATH}/")
     copy_react_essential_appjs_files(models_path + f"{REACT_JS_SRC_PATH}/")
+
+    # Copy React TS essentials
+
+    copy_react_ts_essential_files(models_path + f"{REACT_TS_SRC_SERVICES_COMMONS_PATH}/")
+    copy_react_ts_essential_app_files(models_path + f"{REACT_TS_SRC_PATH}/")

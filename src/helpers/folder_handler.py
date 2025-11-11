@@ -43,6 +43,28 @@ def copy_react(destination_dir: str):
     copy_folder(base_path + widgets_path, destination_dir + widgets_path)
 
 
+def copy_react_ts(destination_dir: str):
+    base_path = "react-ts/"
+    utils_path = "_utils"
+    assets_path = "assets"
+    hoc_path = "hoc"
+    pages_path = "pages"
+    widgets_path = "widgets"
+    copy_folder(base_path + utils_path, destination_dir + utils_path)
+    copy_folder(base_path + assets_path, destination_dir + assets_path)
+    copy_folder(base_path + hoc_path, destination_dir + hoc_path)
+    copy_folder(base_path + pages_path, destination_dir + pages_path)
+    copy_folder(base_path + widgets_path, destination_dir + widgets_path)
+
+
+def copy_react_ts_api_client(destination_dir: str):
+    base_path = "react-ts/"
+    config_path = "_config"
+    hooks_path = "_hooks"
+    copy_folder(base_path + config_path, destination_dir + config_path)
+    copy_folder(base_path + hooks_path, destination_dir + hooks_path)
+
+
 def copy_folder(source_dir: str, destination_dir: str):
     if os.path.exists(destination_dir):
         shutil.rmtree(destination_dir)

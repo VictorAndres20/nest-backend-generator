@@ -1,5 +1,5 @@
 import { MAIN_API_HOST } from '../../_config/api';
-import { getToken } from '../../_utils/storage-handler';
+import { getToken } from '../../../_utils/storage-handler';
 import { HttpResponse } from './base.types';
 
 export const buildHeadersOptions = () => ({

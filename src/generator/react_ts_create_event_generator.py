@@ -1,4 +1,4 @@
-class ReactCreateEventGenerator:
+class ReactTSCreateEventGenerator:
 
     def __init__(self):
         self.imports = ""
@@ -9,7 +9,7 @@ class ReactCreateEventGenerator:
                         "  create" + entity_name + ",\n" +\
                         "  edit" + entity_name + ",\n" +\
                         "} from '../../_services/" + module_name + ".service';\n"
-        self.content += "import { validate" + entity_name + " } from './model';\n\n"
+        self.content += "import { validate" + entity_name + "DTO } from './model';\n\n"
 
     def clean(self):
         self.imports = ""
@@ -28,13 +28,13 @@ class ReactCreateEventGenerator:
     def build_class_name(self, dict_class: dict):
         entity_name = dict_class["name"]
         self.content += "export const create" + entity_name + "Event = async (body) => {\n" + \
-                        "  validate" + entity_name + "(body);\n\n" +\
+                        "  validate" + entity_name + "DTO(body);\n\n" +\
                         "  return await create" + entity_name + "(body);" + \
-                        "\n}\n\n"
+                        "\n};\n\n"
         self.content += "export const edit" + entity_name + "Event = async (id, body) => {\n" + \
-                        "  validate" + entity_name + "(body);\n\n" + \
+                        "  validate" + entity_name + "DTO(body);\n\n" + \
                         "  return await edit" + entity_name + "(id, body);" + \
-                        "\n}\n\n"
+                        "\n};\n\n"
 
     def build_close(self):
         self.content += ""

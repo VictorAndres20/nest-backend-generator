@@ -1,4 +1,4 @@
-class ReactFindEventGenerator:
+class ReactTSFindEventGenerator:
 
     def __init__(self):
         self.imports = ""
@@ -29,13 +29,13 @@ class ReactFindEventGenerator:
         entity_name = dict_class["name"]
         self.content += "export const findAll" + entity_name + "Event = async () => {\n" + \
                         "  return await findAll" + entity_name + "();" + \
-                        "\n}\n\n"
+                        "\n};\n\n"
         self.content += "export const find" + dict_class["name"] + "ByIdEvent = async (id) => {\n" + \
                         "  return await find" + entity_name + "ById(id);" + \
-                        "\n}\n\n"
+                        "\n};\n\n"
         self.content += "export const findAll" + dict_class["name"] + "PagedEvent = async (page, limit = 8) => {\n" + \
                         "  return await findAll" + entity_name + "Paged(page, limit);" + \
-                        "\n}\n\n"
+                        "\n};\n\n"
 
     def build_close(self):
         self.content += ""

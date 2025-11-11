@@ -37,5 +37,25 @@ def copy_react_essential_appjs_files(destination_dir: str):
     copy_file(base_path + env_example_file, destination_dir + env_example_file)
 
 
+def copy_react_ts_essential_files(destination_dir: str):
+    base_path = "react-ts/"
+    base_service_file = "base.service.ts"
+    base_types_file = "base.types.ts"
+    copy_file(base_path + base_service_file, destination_dir + base_service_file)
+    copy_file(base_path + base_types_file, destination_dir + base_types_file)
+
+
+def copy_react_ts_essential_app_files(destination_dir: str):
+    base_path = "react-ts/"
+    app_tsx_file = "App.tsx"
+    index_css_file = "index.css"
+    main_tsx_file = "main.tsx"
+    env_example_file = "env-example"
+    copy_file(base_path + app_tsx_file, destination_dir + app_tsx_file)
+    copy_file(base_path + index_css_file, destination_dir + index_css_file)
+    copy_file(base_path + main_tsx_file, destination_dir + main_tsx_file)
+    copy_file(base_path + env_example_file, destination_dir + env_example_file)
+
+
 def copy_file(source_file: str, destination_file: str):
     shutil.copy(source_file, destination_file)

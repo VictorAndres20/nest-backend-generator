@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 //import { message } from "antd";
-import { downloadPdfFile } from '../../_utils/download-file';
+import { downloadPdfFile } from '../../../_utils/download-file';
 import { HttpResponse } from '../../_services/_commons/base.types';
 
 interface HttpResponseData {
