@@ -8,9 +8,7 @@ from src.generator.react_create_event_generator import ReactCreateEventGenerator
 from src.generator.react_find_event_generator import ReactFindEventGenerator
 from src.generator.react_model_generator import ReactModelGenerator
 from src.generator.react_service_generator import ReactServiceGenerator
-from src.generator.react_ts_create_event_generator import ReactTSCreateEventGenerator
 from src.generator.react_ts_entity_types_generator import ReactTSEntityTypesGenerator
-from src.generator.react_ts_find_event_generator import ReactTSFindEventGenerator
 from src.generator.react_ts_model_generator import ReactTSModelGenerator
 from src.generator.react_ts_service_generator import ReactTSServiceGenerator
 from src.generator.service_generator import ServiceGenerator
