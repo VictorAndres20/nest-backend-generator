@@ -166,7 +166,7 @@ def build_list_modules_from_draw_db_io(path: str):
                 list_modules[module_idx][child_table_name][child_field_idx]["fe_pk_type"] = parent_field_dict["type"]
                 list_modules[module_idx][child_table_name][child_field_idx]["fe_pk"] = parent_field_name
                 list_modules[module_idx][child_table_name][child_field_idx]["fe_module"] = parent_table_name
-                print(list_modules[module_idx][child_table_name][child_field_idx])
+                # print(list_modules[module_idx][child_table_name][child_field_idx])
 
         module_idx = find_index_by_key(parent_table_name, list_modules)
         if module_idx != -1:

@@ -15,14 +15,7 @@ def check_nullish_operator(dict_class: dict, is_pk_null: bool = False):
     if is_column_null(dict_class) or (is_pk_null and column == 'PrimaryGeneratedColumn'):
         return "?"
 
-    return "!"
-
-
-def check_null_column_definition(dict_class: dict):
-    if is_column_null(dict_class):
-        return "?"
-
-    return "!"
+    return ""
 
 
 def check_null_type(dict_class: dict):
@@ -32,48 +25,30 @@ def check_null_type(dict_class: dict):
     return ""
 
 
-def check_column_decorator_config(dict_class: dict):
-    if dict_class["column"] != "Column":
-        return ""
-
-    db_type = dict_class["db_type"]
-    db_type_formated = db_type.split("(")[0]
-    column_decorator_config = "{ type: '" + str(db_type_formated).lower() + "'"
-
-    if db_type_formated == 'NUMERIC':
-        column_decorator_config += ", scale: 2, precision: 10"
-
-    if is_column_null(dict_class):
-        column_decorator_config += ", nullable: true"
-
-    column_decorator_config += " }"
-
-    return column_decorator_config
-
-
-class EntityGenerator:
+class ReactTSEntityTypesGenerator:
 
     def __init__(self):
-        self.imports = "import {\n  Entity,\n  Column,\n  PrimaryGeneratedColumn,\n  PrimaryColumn,\n  OneToMany," \
-                       "\n  ManyToOne,\n  JoinColumn,\n} from 'typeorm';\n"
+        self.imports = ""
         self.class_imports = ""
-        self.decorator = "@"
         self.content = ""
         self.dto_content = ""
+        self.query_content = ""
+        self.paged_query_content = ""
 
     def clean(self):
         self.class_imports = ""
         self.content = ""
         self.dto_content = ""
+        self.query_content = ""
+        self.paged_query_content = ""
 
     def build_class_imports(self, list_attr: List):
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
             if str(dict_attr["column"]).startswith("foreign"):
                 fe_module = get_module_name(dict_attr["fe_module"])
-                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from '../../" + \
-                                      fe_module + "/entity/" + \
-                                      fe_module + ".entity';\n"
+                self.class_imports += "import {\n  " + dict_attr["foreign_entity"] + "EntityQuery,\n  " + dict_attr["foreign_entity"] + "EntityType,\n} from './" + \
+                                      fe_module + ".types';\n"
 
     def build_class(self, list_attr: List):
         self.build_headers(list_attr)
@@ -82,6 +57,8 @@ class EntityGenerator:
             if dict_attr["type"] == "entity":
                 self.build_class_name(dict_attr)
                 self.build_dto_class(dict_attr)
+                self.build_query_class(dict_attr)
+                self.build_paged_query_class(dict_attr)
             else:
                 if str(dict_attr["column"]).startswith("foreign"):
                     foreign_parts = str(dict_attr["column"]).split("=")
@@ -89,13 +66,21 @@ class EntityGenerator:
                     if foreign_type == "foreign":
                         self.build_main_content_many_to_one(dict_attr)
                         self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
+                        self.build_query_main_content_many_to_one(dict_attr)
                     elif foreign_type == "foreign_ref":
                         self.build_main_content_one_to_many(dict_attr)
+                        self.build_query_main_content_one_to_many(dict_attr)
                 else:
                     self.build_main_content(dict_attr)
                     self.build_dto_main_content(dict_attr, dict_attr["type"])
+                    self.build_query_main_content(dict_attr)
+
+        self.build_paged_query_main_content()
+
         self.build_close()
         self.build_dto_close()
+        self.build_query_close()
+        self.build_paged_query_close()
 
     def build_headers(self, list_attr: List):
         self.build_class_imports(list_attr)
@@ -104,36 +89,50 @@ class EntityGenerator:
         self.content += "\n"
 
     def build_main_content(self, dict_class: dict):
-        self.content += "  " + self.decorator + dict_class["column"] + "(" + check_column_decorator_config(dict_class) +")\n"
-        self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"] + check_null_type(dict_class) + ";\n\n"
+        self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"] + check_null_type(dict_class) + ";\n"
 
     def build_main_content_many_to_one(self, dict_class: dict):
-        self.content += "  " + self.decorator + "ManyToOne(() => " + dict_class["foreign_entity"] + ", e => e." + \
-                        dict_class["fe_property"] + ", {" + "\n"
-        self.content += "    nullable: true,\n" if is_column_null(dict_class) else ""
-        self.content += "    " + 'onDelete: "CASCADE",' + "\n"
-        self.content += "    " + 'eager: true,' + "\n  })\n"
-        self.content += "  " + self.decorator + 'JoinColumn({ name: "' + dict_class["name"] + '" })\n'
-        self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["foreign_entity"]  + check_null_type(dict_class) + ";\n\n"
+        self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["foreign_entity"] + "EntityType" + check_null_type(dict_class) + ";\n"
 
     def build_main_content_one_to_many(self, dict_class: dict):
-        self.content += "  " + self.decorator + 'OneToMany(() => ' + dict_class["foreign_entity"] + ', (e) => e.' + \
-                        dict_class["fe_property"] + ')\n'
-        self.content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + ";\n\n"
+        self.content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "EntityType[];\n"
 
     def build_close(self):
         self.content += "}"
 
     def build_class_name(self, dict_class: dict):
-        self.content += self.decorator + dict_class["column"] + "({ name: '" + dict_class["table_name"] + "' })\n"
-        self.content += "export class " + dict_class["name"] + " {\n"
+        self.content += "export interface " + dict_class["name"] + "EntityType {\n"
 
     def build_dto_class(self, dict_class: dict):
-        self.dto_content += "export class " + dict_class["name"] + "DTO {"
-        self.dto_content += "\n"
+        self.dto_content += "export interface " + dict_class["name"] + "DTO {\n"
 
     def build_dto_main_content(self, dict_class: dict, type_name: str):
         self.dto_content += "  " + dict_class["name"] + check_nullish_operator(dict_class, True) + ": " + type_name + ";\n"
 
     def build_dto_close(self):
         self.dto_content += "}"
+
+    def build_query_class(self, dict_class: dict):
+        self.query_content += "export interface " + dict_class["name"] + "EntityQuery {\n"
+
+    def build_query_main_content(self, dict_class: dict):
+        self.query_content += "  " + dict_class["name"] + "?: " + dict_class["type"] + ";\n"
+
+    def build_query_main_content_many_to_one(self, dict_class: dict):
+        self.query_content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "EntityQuery" + ";\n"
+
+    def build_query_main_content_one_to_many(self, dict_class: dict):
+        self.query_content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "EntityQuery[];\n"
+
+    def build_query_close(self):
+        self.query_content += "}"
+
+    def build_paged_query_class(self, dict_class: dict):
+        self.paged_query_content += "export interface " + dict_class["name"] + "EntityPagedQuery extends " + dict_class["name"] + "EntityQuery {\n"
+
+    def build_paged_query_main_content(self):
+        self.paged_query_content += "  page: number;\n"
+        self.paged_query_content += "  limit?: number | null;\n"
+
+    def build_paged_query_close(self):
+        self.paged_query_content += "}"

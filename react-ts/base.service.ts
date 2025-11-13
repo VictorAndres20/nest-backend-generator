@@ -45,7 +45,7 @@ export const handleFetch = async <E, DTO>(
   path: string,
   options: RequestInit,
   body?: DTO
-) => {
+): Promise<HttpResponse<E>> => {
   const json = await sendFetch<E, DTO>(path, options, body);
   if (!json.ok) throw new Error(json.error);
   return json;

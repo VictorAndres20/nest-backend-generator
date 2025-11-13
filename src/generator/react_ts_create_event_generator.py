@@ -7,7 +7,7 @@ class ReactTSCreateEventGenerator:
     def build_additional_imports(self, module_name: str, entity_name: str):
         self.content += "import {\n" +\
                         "  create" + entity_name + ",\n" +\
-                        "  edit" + entity_name + ",\n" +\
+                        "  update" + entity_name + ",\n" +\
                         "} from '../../_services/" + module_name + ".service';\n"
         self.content += "import { validate" + entity_name + "DTO } from './model';\n\n"
 
@@ -31,9 +31,9 @@ class ReactTSCreateEventGenerator:
                         "  validate" + entity_name + "DTO(body);\n\n" +\
                         "  return await create" + entity_name + "(body);" + \
                         "\n};\n\n"
-        self.content += "export const edit" + entity_name + "Event = async (id, body) => {\n" + \
+        self.content += "export const update" + entity_name + "Event = async (id, body) => {\n" + \
                         "  validate" + entity_name + "DTO(body);\n\n" + \
-                        "  return await edit" + entity_name + "(id, body);" + \
+                        "  return await update" + entity_name + "(id, body);" + \
                         "\n};\n\n"
 
     def build_close(self):

@@ -9,6 +9,7 @@ from src.generator.react_find_event_generator import ReactFindEventGenerator
 from src.generator.react_model_generator import ReactModelGenerator
 from src.generator.react_service_generator import ReactServiceGenerator
 from src.generator.react_ts_create_event_generator import ReactTSCreateEventGenerator
+from src.generator.react_ts_entity_types_generator import ReactTSEntityTypesGenerator
 from src.generator.react_ts_find_event_generator import ReactTSFindEventGenerator
 from src.generator.react_ts_model_generator import ReactTSModelGenerator
 from src.generator.react_ts_service_generator import ReactTSServiceGenerator
@@ -41,8 +42,9 @@ REACT_JS_SRC_HOOKS_PATH = f"{REACT_JS_SRC_PATH}/_hooks"
 REACT_TS_ROOT_PATH = "react-ts"
 REACT_TS_SRC_PATH = f"{REACT_TS_ROOT_PATH}/src"
 REACT_TS_SRC_API_CLIENT_PATH = f"{REACT_TS_SRC_PATH}/_api-client"
+REACT_TS_SRC_TYPES_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_types"
 REACT_TS_SRC_SERVICES_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_services"
-REACT_TS_SRC_EVENTS_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_events"
+REACT_TS_SRC_HELPERS_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_helpers"
 REACT_TS_SRC_HOOKS_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_hooks"
 REACT_TS_SRC_SERVICES_COMMONS_PATH = f"{REACT_TS_SRC_SERVICES_PATH}/_commons"
 
@@ -73,8 +75,9 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     create_folder(models_path + REACT_TS_ROOT_PATH)
     create_folder(models_path + REACT_TS_SRC_PATH)
     create_folder(models_path + REACT_TS_SRC_API_CLIENT_PATH)
+    create_folder(models_path + REACT_TS_SRC_TYPES_PATH)
     create_folder(models_path + REACT_TS_SRC_SERVICES_PATH)
-    create_folder(models_path + REACT_TS_SRC_EVENTS_PATH)
+    create_folder(models_path + REACT_TS_SRC_HELPERS_PATH)
     create_folder(models_path + REACT_TS_SRC_SERVICES_COMMONS_PATH)
 
     # First copy React JS and React TS
@@ -104,10 +107,9 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     react_create_event_generator = ReactCreateEventGenerator()
 
     # React TS generators
+    react_ts_entity_types_generator = ReactTSEntityTypesGenerator()
     react_ts_service_generator = ReactTSServiceGenerator()
     react_ts_model_generator = ReactTSModelGenerator()
-    react_ts_find_event_generator = ReactTSFindEventGenerator()
-    react_ts_create_event_generator = ReactTSCreateEventGenerator()
 
     modules = []
     module_names = []
@@ -213,34 +215,24 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         # Generate and write React TS entity service
 
         react_ts_service_generator.clean()
-        react_ts_service_generator.build_class(module_name, class_dict, pk_dict)
+        react_ts_service_generator.build_class(module_name, class_dict, pk_dict, list_attr)
         write_code(models_path + f"{REACT_TS_SRC_SERVICES_PATH}/" + module_name + ".service.ts",
                    react_ts_service_generator.content, False)
-
-        # Create React TS event folder
-
-        create_folder(models_path + f"{REACT_TS_SRC_EVENTS_PATH}/" + module_name)
 
         # Generate and write React TS entity model
 
         react_ts_model_generator.clean()
         react_ts_model_generator.build_class(list_attr)
-        write_code(models_path + f"{REACT_TS_SRC_EVENTS_PATH}/" + module_name + "/model.ts",
+        write_code(models_path + f"{REACT_TS_SRC_HELPERS_PATH}/" + module_name + ".helper.ts",
                    react_ts_model_generator.content, False)
 
-        # Generate and write React TS entity find event
+        # Generate and write React TS entity types
 
-        react_ts_find_event_generator.clean()
-        react_ts_find_event_generator.build_class(module_name, class_dict)
-        write_code(models_path + f"{REACT_TS_SRC_EVENTS_PATH}/" + module_name + "/query.event.ts",
-                   react_ts_find_event_generator.content, False)
-
-        # Generate and write React TS entity create event
-
-        react_ts_create_event_generator.clean()
-        react_ts_create_event_generator.build_class(module_name, class_dict)
-        write_code(models_path + f"{REACT_TS_SRC_EVENTS_PATH}/" + module_name + "/mutation.event.ts",
-                   react_ts_create_event_generator.content, False)
+        react_ts_entity_types_generator.clean()
+        react_ts_entity_types_generator.build_class(list_attr)
+        react_ts_entity_types_content = f"{react_ts_entity_types_generator.content}\n\n{react_ts_entity_types_generator.query_content}"
+        react_ts_entity_types_content += f"\n\n{react_ts_entity_types_generator.paged_query_content}\n\n{react_ts_entity_types_generator.dto_content}"
+        write_code(models_path + f"{REACT_TS_SRC_TYPES_PATH}/" + module_name + ".types.ts", react_ts_entity_types_content, False)
 
     # ######### After iterate all entities operations:
 
