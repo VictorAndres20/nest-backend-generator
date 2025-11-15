@@ -1,7 +1,7 @@
 # Database, Backend NestJS and Frontend React generator
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
-- Use drawDB.io json file or models_template.xlsx as database representation for ORM
+- Use [drawDB.io](https://github.com/drawdb-io/drawdb) JSON file as database representation to generate files
 
 - In  a `.env` file update variable paths
 See `env-example` file
@@ -55,30 +55,8 @@ npm create vite@latest front-my-app
 
 -----------------------------------------------
 
-## models_template.xlsx or models.xlsx Usage
+## JSON file model
 
 > [!NOTE]
-> You can use a drawDB.io json file (experimental)
-
-- All sheets are models name (tables)
-
-- Sheet columns info:
-1ROW: Columns names **(DON'T TOUCH IT)**
-2ROW: Entity name
-2ROW: Primary Key it could be (PrimaryGeneratedColumn() or PrimaryColumn())
-nROW: Other properties:
-        - Normal Columns: Column() or Column({ select: false })
-        - Foreign Key(ManyToOne): foreign
-        - Foreign Key Reference(OneToMany): foreign_ref
-
-### FOREIGN COLUMNS EXPLANATION
-- FOREIGN_ENTITY: Foreign Key Entity class name
-- FE_PROPERTY: Foreign Key Entity property that make the relation
-- FE_PK_TYPE: Foreign Key Entity PRIMARY KEY type
-- FE_PK: Foreign Key Entity PRIMARY KEY property
-- FE_MODULE: Foreign Key Entity module package name
-
-### DATABASE COLUMNS EXPLANATION
-- DB_TYPE: Database Data Type (VARCHAR(500), INTEGER, DATE, SMALLINT, TIMESTAMP).
-- DEFAULT_VALUE: Default value if it is null (1, gen_random_uuid(), CURRENT_TIMESTAMP)
-- NULL: if it has 'X' then NOT NULL is added.
+> You need to use a [drawDB.io](https://github.com/drawdb-io/drawdb) json file
+> Export a [drawDB.io](https://github.com/drawdb-io/drawdb) model as JSON and use it as input file for this project 

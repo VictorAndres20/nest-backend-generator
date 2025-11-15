@@ -3,8 +3,7 @@
 MODULE_NOMENCLATURE_SEPARATOR=-
 MODELS_OUTPUT_PATH=/home/vic/documents/models/
 MODELS_INPUT_PATH=/home/vic/source-code/app/db/
-# MODELS_FILE_NAME=models_template.xlsx # DEPRECATED
-# Set a json file to use a drawDB json file!
+# Set a drawDB json file
 MODELS_FILE_NAME=draw-db-model.json
 GENERATE_FOREIGN_KEYS=True
 # DB_SCHEMA=vic
