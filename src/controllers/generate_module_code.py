@@ -87,8 +87,15 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
     ddl = ''
 
-    list_modules = build_list_modules_from_draw_db_io(file_path) if file_path.endswith(".json") else read_excel_to_list_dict(file_path)
-    # print(list_modules)
+    if not file_path.endswith(".json"):
+        raise Exception(f"File {file_path} should be a JSON file from DrawDB.io")
+
+    list_modules, enums = build_list_modules_from_draw_db_io(file_path)
+    print("MODULES:")
+    print(list_modules)
+
+    print("ENUMS:")
+    print(enums)
 
     # Nest generators
     entity_generator = EntityGenerator()

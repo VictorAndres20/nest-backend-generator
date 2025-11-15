@@ -1,14 +1,6 @@
 import json
-import os
-
 from src.helpers.find_index import find_index_by_key, find_index
 from src.helpers.tp_pascal_case import to_pascal_case
-from dotenv import dotenv_values
-
-config = dotenv_values("../../.env")
-
-model_file_path = config["MODELS_INPUT_PATH"]
-model_file_name = config["MODELS_FILE_NAME"]
 
 string_types = [
     "VARCHAR",
@@ -215,9 +207,3 @@ def build_list_modules_from_draw_db_io(path: str):
             list_modules[module_idx][parent_table_name] = new_list
 
     return list_modules, enums
-
-
-# JUST TO TEST
-if __name__ == '__main__':
-    list_modules2 = build_list_modules_from_draw_db_io(os.path.join(model_file_path, model_file_name))
-    print(list_modules2)
