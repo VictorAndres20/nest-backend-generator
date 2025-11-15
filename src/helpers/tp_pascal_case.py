@@ -1,5 +1,5 @@
 def to_pascal_case(s: str) -> str:
-    return ''.join(word.capitalize() for word in s.split('_'))
+    return ''.join(word.capitalize() for word in s.lower().split('_'))
 
 
 def to_camel_case(s: str) -> str:

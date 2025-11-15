@@ -1,7 +1,14 @@
 import json
+import os
 
 from src.helpers.find_index import find_index_by_key, find_index
 from src.helpers.tp_pascal_case import to_pascal_case
+from dotenv import dotenv_values
+
+config = dotenv_values("../../.env")
+
+model_file_path = config["MODELS_INPUT_PATH"]
+model_file_name = config["MODELS_FILE_NAME"]
 
 string_types = [
     "VARCHAR",
@@ -26,13 +33,23 @@ boolean_types = [
     "BOOLEAN"
 ]
 
+
+def get_enum_normalized_name(enum_name: str) -> str:
+    return enum_name.upper()
+
+
+def get_enum_pascal_name(enum_name: str) -> str:
+    return to_pascal_case(enum_name)
+
+
 def get_is_not_autoincrement_by_type(field_type: str | None):
     if field_type is None or field_type == '':
         return None
 
     return False if field_type != 'SERIAL' else True
 
-def get_type_orm_type(table_field_type: str):
+
+def get_type_orm_type(table_field_type: str, enum_normalized_names: list):
     if table_field_type in string_types:
         return "string"
 
@@ -44,6 +61,9 @@ def get_type_orm_type(table_field_type: str):
 
     if table_field_type in boolean_types:
         return "boolean"
+
+    if table_field_type in enum_normalized_names:
+        return to_pascal_case(table_field_type)
 
     raise Exception(f"type {table_field_type} is not supported")
 
@@ -65,6 +85,8 @@ def build_list_modules_from_draw_db_io(path: str):
     list_modules = []
 
     field_relationships = data["relationships"]
+    enums = data["enums"] if "enums" in data else []
+    enum_normalized_names = [get_enum_normalized_name(enum["name"]) for enum in enums]
 
     table_ids_dictionary = {}
 
@@ -79,6 +101,7 @@ def build_list_modules_from_draw_db_io(path: str):
             {
                 'name': to_pascal_case(table_name),
                 'type': "entity",
+                'isEnum': False,
                 'column': "Entity",
                 'table_name': table_name,
                 'foreign_entity': "",
@@ -105,7 +128,7 @@ def build_list_modules_from_draw_db_io(path: str):
             is_not_increment_field = is_not_increment_field_by_type if is_not_increment_field_by_type is not None \
                 else table_field["increment"]
 
-            orm_type = get_type_orm_type(table_field_type)
+            orm_type = get_type_orm_type(table_field_type, enum_normalized_names)
 
             table_ids_dictionary[table_id]["field_ids"][table_field_id] = {"name": table_field_name, "type": orm_type}
 
@@ -116,6 +139,7 @@ def build_list_modules_from_draw_db_io(path: str):
                 {
                     'name': table_field_name,
                     'type': orm_type,
+                    'isEnum': True if table_field_type in enum_normalized_names else False,
                     'column': get_column_definition(table_field_default, is_primary_field, is_not_increment_field),
                     'table_name': table_name,
                     'foreign_entity': "",
@@ -175,6 +199,7 @@ def build_list_modules_from_draw_db_io(path: str):
                 {
                     'name': f"{child_table_name}_list",
                     'type': f"{to_pascal_case(child_table_name)}[]",
+                    'isEnum': False,
                     'column': "foreign_ref",
                     'table_name': parent_table_name,
                     'foreign_entity': to_pascal_case(child_table_name),
@@ -189,9 +214,10 @@ def build_list_modules_from_draw_db_io(path: str):
             )
             list_modules[module_idx][parent_table_name] = new_list
 
-    return list_modules
+    return list_modules, enums
 
 
+# JUST TO TEST
 if __name__ == '__main__':
-    list_modules2 = build_list_modules_from_draw_db_io('/Users/vic/Documents/Projects/mascoti/models/mascoti-drawdb.json')
+    list_modules2 = build_list_modules_from_draw_db_io(os.path.join(model_file_path, model_file_name))
     print(list_modules2)
