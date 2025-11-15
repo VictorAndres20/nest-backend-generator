@@ -1,3 +1,4 @@
+import os
 from src.generator.api_module_generator import ApiModuleGenerator
 from src.generator.business_generator import BusinessGenerator
 from src.generator.controller_generator import ControllerGenerator
@@ -48,6 +49,7 @@ REACT_TS_SRC_SERVICES_COMMONS_PATH = f"{REACT_TS_SRC_SERVICES_PATH}/_commons"
 
 
 def generate_module(models_path: str, file_path: str, db_schema: str, generate_sql_relations: bool = False):
+    models_path += "/" if not models_path.endswith("/") else ""
 
     # Create base Nest folders
 
