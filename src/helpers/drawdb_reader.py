@@ -41,7 +41,7 @@ def get_is_not_autoincrement_by_type(field_type: str | None):
     return False if field_type != 'SERIAL' else True
 
 
-def get_type_orm_type(table_field_type: str, enum_normalized_names: list):
+def get_type_orm_type(table_field_type: str, is_enum: bool):
     if table_field_type in string_types:
         return "string"
 
@@ -54,7 +54,7 @@ def get_type_orm_type(table_field_type: str, enum_normalized_names: list):
     if table_field_type in boolean_types:
         return "boolean"
 
-    if table_field_type in enum_normalized_names:
+    if is_enum:
         return to_pascal_case(table_field_type)
 
     raise Exception(f"type {table_field_type} is not supported")
@@ -120,7 +120,9 @@ def build_list_modules_from_draw_db_io(path: str):
             is_not_increment_field = is_not_increment_field_by_type if is_not_increment_field_by_type is not None \
                 else table_field["increment"]
 
-            orm_type = get_type_orm_type(table_field_type, enum_normalized_names)
+            is_enum = True if table_field_type in enum_normalized_names else False
+
+            orm_type = get_type_orm_type(table_field_type, is_enum)
 
             table_ids_dictionary[table_id]["field_ids"][table_field_id] = {"name": table_field_name, "type": orm_type}
 
@@ -131,14 +133,14 @@ def build_list_modules_from_draw_db_io(path: str):
                 {
                     'name': table_field_name,
                     'type': orm_type,
-                    'isEnum': True if table_field_type in enum_normalized_names else False,
+                    'isEnum': is_enum,
                     'column': get_column_definition(table_field_default, is_primary_field, is_not_increment_field),
                     'table_name': table_name,
                     'foreign_entity': "",
                     'fe_property': "",
                     'fe_pk_type': "",
                     'fe_pk': "",
-                    'fe_module': "",
+                    'fe_module': table_field_type,
                     'db_type': table_field_type if table_field_size == '' else f"{table_field_type}({table_field_size})",
                     'default_value': table_field_default,
                     'null': "x" if not is_not_null_field else "",

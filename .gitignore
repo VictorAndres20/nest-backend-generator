@@ -191,3 +191,9 @@ fabric.properties
 # System Files
 .DS_Store
 Thumbs.db
+
+# Log files
+enums.json
+modules.json
+enums.py
+modules.py

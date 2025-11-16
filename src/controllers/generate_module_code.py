@@ -1,9 +1,9 @@
-import os
 from src.generator.api_module_generator import ApiModuleGenerator
 from src.generator.business_generator import BusinessGenerator
 from src.generator.controller_generator import ControllerGenerator
 from src.generator.entity_generator import EntityGenerator
 from src.generator.entity_module_generator import EntityModuleGenerator
+from src.generator.enums_generator import EnumsGenerator
 from src.generator.index_api_generator import IndexApiGenerator
 from src.generator.react_create_event_generator import ReactCreateEventGenerator
 from src.generator.react_find_event_generator import ReactFindEventGenerator
@@ -17,7 +17,6 @@ from src.generator.sql_generator import SQLGenerator
 from src.helpers.copy_files import copy_essential_files, copy_react_essential_files, copy_react_essential_appjs_files, \
     copy_nest_essential_env_files, copy_react_ts_essential_files, copy_react_ts_essential_app_files
 from src.helpers.drawdb_reader import build_list_modules_from_draw_db_io
-from src.helpers.excel_reader import read_excel_to_list_dict
 from src.helpers.file_handler import create_empty_file
 from src.helpers.folder_handler import create_folder, copy_essentials, copy_react, get_module_name, copy_react_ts, \
     copy_react_ts_api_client
@@ -26,6 +25,7 @@ from src.helpers.write_file import write_code
 
 NEST_ROOT_PATH = "nest"
 NEST_SRC_PATH = f"{NEST_ROOT_PATH}/src"
+NEST_SRC_ENUMS_PATH = f"{NEST_SRC_PATH}/_enums"
 NEST_SRC_API_PATH = f"{NEST_SRC_PATH}/api"
 NEST_SRC_ASSETS_PATH = f"{NEST_SRC_PATH}/assets"
 
@@ -55,6 +55,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
     create_folder(models_path + NEST_ROOT_PATH)
     create_folder(models_path + NEST_SRC_PATH)
+    create_folder(models_path + NEST_SRC_ENUMS_PATH)
     create_folder(models_path + NEST_SRC_API_PATH)
     create_folder(models_path + NEST_SRC_ASSETS_PATH)
     create_empty_file(models_path + NEST_SRC_ASSETS_PATH + "/.gitkeep")
@@ -93,11 +94,14 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     list_modules, enums = build_list_modules_from_draw_db_io(file_path)
     print("MODULES:")
     print(list_modules)
+    write_code("./modules.py", str(list_modules), False)
 
     print("ENUMS:")
     print(enums)
+    write_code("./enums.py", str(enums), False)
 
     # Nest generators
+    enums_generator = EnumsGenerator()
     entity_generator = EntityGenerator()
     service_generator = ServiceGenerator()
     business_generator = BusinessGenerator()
@@ -117,6 +121,32 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     react_ts_entity_types_generator = ReactTSEntityTypesGenerator()
     react_ts_service_generator = ReactTSServiceGenerator()
     react_ts_model_generator = ReactTSModelGenerator()
+
+    # ***** Generate Enums
+
+    for enum in enums:
+        enums_generator.clean()
+        enums_generator.build_class(enum)
+
+        enum_file_name = get_module_name(enum["name"])
+
+        # Write Nest enum
+        write_code(models_path + f"{NEST_SRC_ENUMS_PATH}/" + enum_file_name + ".enum.ts",
+                   enums_generator.content, False)
+
+        # Write React TS enum
+
+        # Add DDL to variable
+        ddl += f"CREATE TYPE \"{enum["name"]}\" AS ENUM(\n"
+        for i in range(0, len(enum["values"])):
+            value = enum["values"][i]
+            ddl += f"    '{value}'"
+            if i < len(enum["values"]) - 1:
+                ddl += ","
+            ddl += "\n"
+        ddl += f");\n\n"
+
+    # ***** Generate Modules
 
     modules = []
     module_names = []

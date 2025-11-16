@@ -1,6 +1,7 @@
 from typing import List
 
 from src.helpers.folder_handler import get_module_name
+from src.helpers.tp_pascal_case import to_pascal_case
 
 
 def is_column_null(dict_class: dict):
@@ -36,15 +37,22 @@ def check_column_decorator_config(dict_class: dict):
     if dict_class["column"] != "Column":
         return ""
 
+    is_enum = bool(dict_class["isEnum"])
+
     db_type = dict_class["db_type"]
     db_type_formated = db_type.split("(")[0]
-    column_decorator_config = "{ type: '" + str(db_type_formated).lower() + "'"
+    db_type_formated = 'enum' if is_enum else str(db_type_formated).lower()
+
+    column_decorator_config = "{ type: '" + db_type_formated + "'"
 
     if db_type_formated == 'NUMERIC':
         column_decorator_config += ", scale: 2, precision: 10"
 
     if is_column_null(dict_class):
         column_decorator_config += ", nullable: true"
+
+    if is_enum:
+        column_decorator_config += ", enum: " + to_pascal_case(db_type)
 
     column_decorator_config += " }"
 
@@ -59,16 +67,31 @@ class EntityGenerator:
         self.class_imports = ""
         self.decorator = "@"
         self.content = ""
+        self.dto_imports = ""
         self.dto_content = ""
 
     def clean(self):
         self.class_imports = ""
         self.content = ""
+        self.dto_imports = ""
         self.dto_content = ""
 
     def build_class_imports(self, list_attr: List):
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
+
+            # First ENUMS
+
+            if bool(dict_attr["isEnum"]):
+                fe_entity = dict_attr["type"]
+                fe_module = get_module_name(dict_attr["fe_module"])
+                enum_import = "import { " + fe_entity + " } from '../../../_enums/" + \
+                                      fe_module + ".enum';\n"
+                self.class_imports += enum_import
+                self.dto_imports += enum_import
+
+            # Second FOREIGN ENTITIES
+
             if str(dict_attr["column"]).startswith("foreign"):
                 fe_module = get_module_name(dict_attr["fe_module"])
                 self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from '../../" + \
@@ -83,6 +106,9 @@ class EntityGenerator:
                 self.build_class_name(dict_attr)
                 self.build_dto_class(dict_attr)
             else:
+                # Entity Properties
+
+                # Foreign properties
                 if str(dict_attr["column"]).startswith("foreign"):
                     foreign_parts = str(dict_attr["column"]).split("=")
                     foreign_type = foreign_parts[0]
@@ -91,6 +117,9 @@ class EntityGenerator:
                         self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
                     elif foreign_type == "foreign_ref":
                         self.build_main_content_one_to_many(dict_attr)
+                elif bool(dict_attr["isEnum"]):
+                    self.build_main_content_enum(dict_attr)
+                    self.build_dto_main_content(dict_attr, dict_attr["type"])
                 else:
                     self.build_main_content(dict_attr)
                     self.build_dto_main_content(dict_attr, dict_attr["type"])
@@ -104,6 +133,10 @@ class EntityGenerator:
         self.content += "\n"
 
     def build_main_content(self, dict_class: dict):
+        self.content += "  " + self.decorator + dict_class["column"] + "(" + check_column_decorator_config(dict_class) +")\n"
+        self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"] + check_null_type(dict_class) + ";\n\n"
+
+    def build_main_content_enum(self, dict_class: dict):
         self.content += "  " + self.decorator + dict_class["column"] + "(" + check_column_decorator_config(dict_class) +")\n"
         self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"] + check_null_type(dict_class) + ";\n\n"
 
@@ -129,6 +162,8 @@ class EntityGenerator:
         self.content += "export class " + dict_class["name"] + " {\n"
 
     def build_dto_class(self, dict_class: dict):
+        self.dto_content += self.dto_imports
+        self.dto_content += "\n"
         self.dto_content += "export class " + dict_class["name"] + "DTO {"
         self.dto_content += "\n"
 

@@ -11,7 +11,7 @@ def get_module_name(module_name: str):
     if separator is None or separator == "_":
         return module_name
 
-    return module_name.replace("_", separator)
+    return module_name.lower().replace("_", separator)
 
 
 def create_folder(path):
