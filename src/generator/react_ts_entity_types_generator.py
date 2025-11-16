@@ -31,6 +31,7 @@ class ReactTSEntityTypesGenerator:
         self.imports = ""
         self.class_imports = ""
         self.content = ""
+        self.dto_imports = ""
         self.dto_content = ""
         self.query_content = ""
         self.paged_query_content = ""
@@ -45,6 +46,16 @@ class ReactTSEntityTypesGenerator:
     def build_class_imports(self, list_attr: List):
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
+
+            # First ENUMS
+
+            if bool(dict_attr["isEnum"]):
+                fe_entity = dict_attr["type"]
+                fe_module = get_module_name(dict_attr["fe_module"])
+                enum_import = "import { " + fe_entity + " } from './" + \
+                              fe_module + ".type';\n"
+                self.class_imports += enum_import
+
             if str(dict_attr["column"]).startswith("foreign"):
                 fe_module = get_module_name(dict_attr["fe_module"])
                 self.class_imports += "import {\n  " + dict_attr["foreign_entity"] + "EntityQuery,\n  " + dict_attr["foreign_entity"] + "EntityType,\n} from './" + \

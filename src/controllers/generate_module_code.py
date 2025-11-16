@@ -134,7 +134,9 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         write_code(models_path + f"{NEST_SRC_ENUMS_PATH}/" + enum_file_name + ".enum.ts",
                    enums_generator.content, False)
 
-        # Write React TS enum
+        # Write React TS enum type
+        write_code(models_path + f"{REACT_TS_SRC_TYPES_PATH}/" + enum_file_name + ".type.ts",
+                   enums_generator.content, False)
 
         # Add DDL to variable
         ddl += f"CREATE TYPE \"{enum["name"]}\" AS ENUM(\n"
