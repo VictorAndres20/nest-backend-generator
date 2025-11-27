@@ -9,6 +9,7 @@ string_types = [
 ]
 
 number_types = [
+    "SMALLINT",
     "INTEGER",
     "DECIMAL",
     "NUMBER",
