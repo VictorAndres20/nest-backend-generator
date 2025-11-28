@@ -13,33 +13,35 @@ See `env-example` file
 - Replace default src folder in NestJS project with generated one (`nest/src`)
 
 - Install npm packages
-```
-npm install --save @nestjs/typeorm typeorm
-npm install --save reflect-metadata
-npm install --save dotenv
+```bash
+npm install --save @nestjs/typeorm typeorm reflect-metadata
+# npm install --save dotenv # No needed since new Node JS versions
 npm install --save @nestjs/passport passport @nestjs/jwt passport-jwt
 npm install --save-dev @types/passport-jwt
 npm install bcrypt
+npm install --save body-parser
 ```
+
+- Install DB npm packages
+
 MySQL
-```
+```bash
 npm install --save mysql2
 ```
 
 PostgreSQL
-```
+```bash
 npm install --save pg
 ```
 
 Oracle
-```
+```bash
 npm install --save oracledb
 ```
 
 - OPTIONAL
-```
+```bash
 npm install --save exceljs
-npm install --save body-parser
 ```
 
 - Create React project with vite.
@@ -49,9 +51,13 @@ npm create vite@latest front-my-app
 
 - Paste `react/src` generated folder inside your React app folder
 
-- Create root `.env` following `src/env-example`
+- Create root `.env` following `env-example`
 
 - Install `react-router-dom`
+
+```bash
+npm install --save react-router-dom
+```
 
 -----------------------------------------------
 

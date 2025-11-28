@@ -50,11 +50,17 @@ def copy_react_ts_essential_app_files(destination_dir: str):
     app_tsx_file = "App.tsx"
     index_css_file = "index.css"
     main_tsx_file = "main.tsx"
-    env_example_file = "env-example"
     copy_file(base_path + app_tsx_file, destination_dir + app_tsx_file)
     copy_file(base_path + index_css_file, destination_dir + index_css_file)
     copy_file(base_path + main_tsx_file, destination_dir + main_tsx_file)
+
+
+def copy_react_ts_essential_root_files(destination_dir: str):
+    base_path = "react-ts/"
+    env_example_file = "env-example"
+    prod_env_example_file = "env.production-example"
     copy_file(base_path + env_example_file, destination_dir + env_example_file)
+    copy_file(base_path + prod_env_example_file, destination_dir + prod_env_example_file)
 
 
 def copy_file(source_file: str, destination_file: str):

@@ -15,7 +15,8 @@ from src.generator.react_ts_service_generator import ReactTSServiceGenerator
 from src.generator.service_generator import ServiceGenerator
 from src.generator.sql_generator import SQLGenerator
 from src.helpers.copy_files import copy_essential_files, copy_react_essential_files, copy_react_essential_appjs_files, \
-    copy_nest_essential_env_files, copy_react_ts_essential_files, copy_react_ts_essential_app_files
+    copy_nest_essential_env_files, copy_react_ts_essential_files, copy_react_ts_essential_app_files, \
+    copy_react_ts_essential_root_files
 from src.helpers.drawdb_reader import build_list_modules_from_draw_db_io
 from src.helpers.file_handler import create_empty_file
 from src.helpers.folder_handler import create_folder, copy_essentials, copy_react, get_module_name, copy_react_ts, \
@@ -326,3 +327,4 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
     copy_react_ts_essential_files(models_path + f"{REACT_TS_SRC_SERVICES_COMMONS_PATH}/")
     copy_react_ts_essential_app_files(models_path + f"{REACT_TS_SRC_PATH}/")
+    copy_react_ts_essential_root_files(models_path + f"{REACT_TS_ROOT_PATH}/")
