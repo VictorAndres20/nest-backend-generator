@@ -2,6 +2,7 @@ SERVER_PORT=8000
 JWT_SECRET=secret
 JWT_LICENSE=secret
 BODY_PARSER_LIMIT_MB=20mb
+# Prefix for all routes. E.g., if set to "api", all routes will be accessed under "/api"
 GLOBAL_PREFIX=
 
 # ------------------------- DEVELOP ----------------------------------------
