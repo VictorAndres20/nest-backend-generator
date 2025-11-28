@@ -43,7 +43,7 @@ class SQLGenerator:
                             f"pk_{dict_class['table_name']} PRIMARY KEY(\"{i['name']}\");\n"
         self.content += "\n"
         
-    def build_foriegn(self, list_attr: List, dict_class: dict):
+    def build_foreign(self, list_attr: List, dict_class: dict):
         foreign_keys = filter(lambda item: item['column'] == 'foreign', list_attr)
         for i in foreign_keys:
             self.content += f"ALTER TABLE {self.get_schema()}" \

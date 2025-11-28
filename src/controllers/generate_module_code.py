@@ -122,6 +122,11 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     react_ts_service_generator = ReactTSServiceGenerator()
     react_ts_model_generator = ReactTSModelGenerator()
 
+    # ***** Add schema to DDL if there is any
+
+    if db_schema is not None or db_schema != '':
+        ddl += f"CREATE SCHEMA {db_schema};\n\n"
+
     # ***** Generate Enums
 
     for enum in enums:
@@ -304,7 +309,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
             module_name = list(i.keys())[0]
             list_attr = i[module_name]
             class_dict = list_attr[0]
-            sql_generator.build_foriegn(list_attr, class_dict)
+            sql_generator.build_foreign(list_attr, class_dict)
             ddl += sql_generator.content
             sql_generator.clean()
 
