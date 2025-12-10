@@ -93,6 +93,7 @@ def build_list_modules_from_draw_db_io(path: str):
         module_dict = {table_name: [
             {
                 'name': to_pascal_case(table_name),
+                "is_primary_key": False,
                 'type': "entity",
                 'isEnum': False,
                 'column': "Entity",
@@ -133,6 +134,7 @@ def build_list_modules_from_draw_db_io(path: str):
             module_dict[table_name].append(
                 {
                     'name': table_field_name,
+                    "is_primary_key": is_primary_field,
                     'type': orm_type,
                     'isEnum': is_enum,
                     'column': get_column_definition(table_field_default, is_primary_field, is_not_increment_field),
@@ -193,6 +195,7 @@ def build_list_modules_from_draw_db_io(path: str):
             new_list.append(
                 {
                     'name': f"{child_table_name}_list",
+                    "is_primary_key": False,
                     'type': f"{to_pascal_case(child_table_name)}[]",
                     'isEnum': False,
                     'column': "foreign_ref",
