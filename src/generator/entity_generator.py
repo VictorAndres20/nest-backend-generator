@@ -119,7 +119,7 @@ class EntityGenerator:
             self.class_imports += "  PrimaryGeneratedColumn,\n"
         if has_many_to_one:
             self.class_imports += "  ManyToOne,\n  JoinColumn,\n"
-            #self.class_imports += "  RelationId,\n"
+            self.class_imports += "  RelationId,\n"
         if has_one_to_many:
             self.class_imports += "  OneToMany,\n"
         self.class_imports += "} from 'typeorm';\n"
@@ -174,11 +174,14 @@ class EntityGenerator:
         self.content += "    " + 'eager: true,' + "\n  })\n"
         self.content += "  " + self.decorator + 'JoinColumn({ name: "' + dict_class["name"] + '" })\n'
         self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["foreign_entity"] + check_null_type(dict_class) + ";\n\n"
-        #if dict_class["is_primary_key"]:
-        #    self.content += "  " + self.decorator + 'RelationId((entity: ' + to_pascal_case(dict_class["table_name"]) + ') => entity.' + dict_class["name"] + ')\n'
-        #    self.content += "  @PrimaryColumn()\n"
-        #    self.content += f"  {dict_class["name"]}_id{check_nullish_operator(dict_class)}: {dict_class["fe_pk_type"] + check_null_type(dict_class)}\n"
-        #    self.content += "\n"
+        # Add RelationId decorator
+        self.content += "  " + self.decorator + 'RelationId((entity: ' + to_pascal_case(
+            dict_class["table_name"]) + ') => entity.' + dict_class["name"] + ')\n'
+        if dict_class["is_primary_key"]:
+            self.content += "  @PrimaryColumn()\n"
+
+        self.content += f"  {dict_class["name"]}_id{check_nullish_operator(dict_class)}: {dict_class["fe_pk_type"] + check_null_type(dict_class)}\n"
+        self.content += "\n"
 
     def build_main_content_one_to_many(self, dict_class: dict):
         self.content += "  " + self.decorator + 'OneToMany(() => ' + dict_class["foreign_entity"] + ', (e) => e.' + \
@@ -199,7 +202,10 @@ class EntityGenerator:
         self.dto_content += "\n"
 
     def build_dto_main_content(self, dict_class: dict, type_name: str):
-        self.dto_content += "  " + dict_class["name"] + check_nullish_operator(dict_class, True) + ": " + type_name + ";\n"
+        if dict_class["column"] == "foreign":
+            self.dto_content += "  " + dict_class["name"] + "_id" + check_nullish_operator(dict_class, True) + ": " + type_name + ";\n"
+
+        self.dto_content += "  " + dict_class["name"] + check_nullish_operator(dict_class,True) + ": " + type_name + ";\n"
 
     def build_dto_close(self):
         self.dto_content += "}"
