@@ -62,8 +62,7 @@ def check_column_decorator_config(dict_class: dict):
 class EntityGenerator:
 
     def __init__(self):
-        self.imports = "import {\n  Entity,\n  Column,\n  PrimaryGeneratedColumn,\n  PrimaryColumn,\n  OneToMany," \
-                       "\n  ManyToOne,\n  JoinColumn,\n} from 'typeorm';\n"
+        self.imports = ""
         self.class_imports = ""
         self.decorator = "@"
         self.content = ""
@@ -77,6 +76,10 @@ class EntityGenerator:
         self.dto_content = ""
 
     def build_class_imports(self, list_attr: List):
+        has_one_to_many = False
+        has_many_to_one = False
+        has_pk_generated = False
+        has_pk = False
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
 
@@ -93,10 +96,33 @@ class EntityGenerator:
             # Second FOREIGN ENTITIES
 
             if str(dict_attr["column"]).startswith("foreign"):
+                if str(dict_attr["column"]).endswith("ref"):
+                    has_one_to_many = True
+                else:
+                    has_many_to_one = True
                 fe_module = get_module_name(dict_attr["fe_module"])
                 self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from '../../" + \
                                       fe_module + "/entity/" + \
                                       fe_module + ".entity';\n"
+
+            # Third PK TYPE
+            if bool(dict_attr["is_primary_key"]):
+                if str(dict_attr["column"]).endswith("GeneratedColumn"):
+                    has_pk_generated = True
+                else:
+                    has_pk = True
+
+        self.class_imports += "import {\n  Entity,\n  Column,\n"
+        if has_pk:
+            self.class_imports += "  PrimaryColumn,\n"
+        if has_pk_generated:
+            self.class_imports += "  PrimaryGeneratedColumn,\n"
+        if has_many_to_one:
+            self.class_imports += "  ManyToOne,\n  JoinColumn,\n"
+            #self.class_imports += "  RelationId,\n"
+        if has_one_to_many:
+            self.class_imports += "  OneToMany,\n"
+        self.class_imports += "} from 'typeorm';\n"
 
     def build_class(self, list_attr: List):
         self.build_headers(list_attr)
@@ -147,7 +173,12 @@ class EntityGenerator:
         self.content += "    " + 'onDelete: "CASCADE",' + "\n"
         self.content += "    " + 'eager: true,' + "\n  })\n"
         self.content += "  " + self.decorator + 'JoinColumn({ name: "' + dict_class["name"] + '" })\n'
-        self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["foreign_entity"]  + check_null_type(dict_class) + ";\n\n"
+        self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["foreign_entity"] + check_null_type(dict_class) + ";\n\n"
+        #if dict_class["is_primary_key"]:
+        #    self.content += "  " + self.decorator + 'RelationId((entity: ' + to_pascal_case(dict_class["table_name"]) + ') => entity.' + dict_class["name"] + ')\n'
+        #    self.content += "  @PrimaryColumn()\n"
+        #    self.content += f"  {dict_class["name"]}_id{check_nullish_operator(dict_class)}: {dict_class["fe_pk_type"] + check_null_type(dict_class)}\n"
+        #    self.content += "\n"
 
     def build_main_content_one_to_many(self, dict_class: dict):
         self.content += "  " + self.decorator + 'OneToMany(() => ' + dict_class["foreign_entity"] + ', (e) => e.' + \

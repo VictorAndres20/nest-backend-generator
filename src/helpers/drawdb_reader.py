@@ -39,7 +39,7 @@ def get_is_not_autoincrement_by_type(field_type: str | None):
     if field_type is None or field_type == '':
         return None
 
-    return False if field_type != 'SERIAL' else True
+    return True if field_type != 'SERIAL' else False
 
 
 def get_type_orm_type(table_field_type: str, is_enum: bool):
@@ -65,10 +65,10 @@ def get_column_definition(table_field_default: str, is_primary: bool, is_not_inc
     if not is_primary:
         return "Column"
 
-    if table_field_default is not None or not is_not_increment_field:
-        return "PrimaryGeneratedColumn"
+    if (table_field_default is None or table_field_default == '') and is_not_increment_field:
+        return "PrimaryColumn"
 
-    return "PrimaryColumn"
+    return "PrimaryGeneratedColumn"
 
 
 def build_list_modules_from_draw_db_io(path: str):
