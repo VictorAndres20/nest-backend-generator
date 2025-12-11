@@ -49,7 +49,7 @@ REACT_TS_SRC_HOOKS_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_hooks"
 REACT_TS_SRC_SERVICES_COMMONS_PATH = f"{REACT_TS_SRC_SERVICES_PATH}/_commons"
 
 
-def generate_module(models_path: str, file_path: str, db_schema: str, generate_sql_relations: bool = False):
+def generate_module(models_path: str, file_path: str, db_schema: str, generate_sql_relations: bool = False, print_model_loaded: bool = False):
     models_path += "/" if not models_path.endswith("/") else ""
 
     # Create base Nest folders
@@ -93,13 +93,15 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         raise Exception(f"File {file_path} should be a JSON file from DrawDB.io")
 
     list_modules, enums = build_list_modules_from_draw_db_io(file_path)
-    print("MODULES:")
-    print(list_modules)
-    write_code("./modules.py", str(list_modules), False)
 
-    print("ENUMS:")
-    print(enums)
-    write_code("./enums.py", str(enums), False)
+    if print_model_loaded:
+        print("MODULES:")
+        print(list_modules)
+        write_code("./modules.py", str(list_modules), False)
+
+        print("ENUMS:")
+        print(enums)
+        write_code("./enums.py", str(enums), False)
 
     # Nest generators
     enums_generator = EnumsGenerator()
@@ -122,11 +124,6 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     react_ts_entity_types_generator = ReactTSEntityTypesGenerator()
     react_ts_service_generator = ReactTSServiceGenerator()
     react_ts_model_generator = ReactTSModelGenerator()
-
-    # ***** Add schema to DDL if there is any
-
-    if db_schema is not None or db_schema != '':
-        ddl += f"CREATE SCHEMA {db_schema};\n\n"
 
     # ***** Generate Enums
 
@@ -154,6 +151,11 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
             ddl += "\n"
         ddl += f");\n\n"
 
+    # ***** Add schema to DDL if there is any
+
+    if db_schema is not None or db_schema != '':
+        ddl += f"CREATE SCHEMA {db_schema};\n\n"
+
     # ***** Generate Modules
 
     modules = []
@@ -164,12 +166,22 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         list_attr = i[module_name]
         class_dict = list_attr[0]
 
+        # Generate DB DDL code
+
+        sql_generator.build_class(list_attr, class_dict)
+        ddl += sql_generator.content
+        sql_generator.clean()
+
         # Rename module_name
         module_name = get_module_name(module_name)
 
         module_names.append(module_name)
         modules.append({"class": class_dict["name"], "module": module_name})
+
+        # PK row should be first row
         pk_dict = list_attr[1]
+        if not pk_dict["is_primary_key"]:
+            raise Exception(f"{module_name} has no primary key or is not it first field in the model")
 
         # Create Nest entity folders
 
@@ -215,12 +227,6 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         entity_module_generator.build_class()
         write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/" + module_name + ".module.ts",
                    entity_module_generator.content, False)
-
-        # Generate DB DDL code
-
-        sql_generator.build_class(list_attr, class_dict)
-        ddl += sql_generator.content
-        sql_generator.clean()
 
         # Generate and write React JS entity service
         react_service_generator.clean()

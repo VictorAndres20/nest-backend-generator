@@ -1,9 +1,14 @@
 # Create a .env file or rename this one
 
+# Required variables
+
 MODULE_NOMENCLATURE_SEPARATOR=-
-MODELS_OUTPUT_PATH=/home/vic/documents/models/
-MODELS_INPUT_PATH=/home/vic/source-code/app/db/
-# Set a drawDB json file
-MODELS_FILE_NAME=draw-db-model.json
+MODELS_OUTPUT_PATH=/home/vic/documents/generated-code/
+MODELS_INPUT_PATH=/home/vic/source-code/app/db-model/
+MODELS_FILE_NAME=draw-db-model-file.json # Set a drawDB json file name
+
+# Optional variables
+
 GENERATE_FOREIGN_KEYS=True
-# DB_SCHEMA=vic
+# DB_SCHEMA=dev
+LOG_MODEL_LOADED=True
