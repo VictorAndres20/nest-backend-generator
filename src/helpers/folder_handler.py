@@ -65,7 +65,11 @@ def copy_react_ts_api_client(destination_dir: str):
     copy_folder(base_path + hooks_path, destination_dir + hooks_path)
 
 
-def copy_folder(source_dir: str, destination_dir: str):
+def remove_folder(destination_dir: str):
     if os.path.exists(destination_dir):
         shutil.rmtree(destination_dir)
+
+
+def copy_folder(source_dir: str, destination_dir: str):
+    remove_folder(destination_dir)
     shutil.copytree(source_dir, destination_dir)

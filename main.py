@@ -1,4 +1,6 @@
 import os
+
+from src.controllers.clean_generated_modules import clean_generated_modules
 from src.controllers.generate_module_code import generate_module
 from dotenv import dotenv_values
 
@@ -19,6 +21,7 @@ log_model_loaded = True if log_model_loaded is not None and log_model_loaded != 
 
 
 def execute():
+    clean_generated_modules(models_path)
     generate_module(models_path, os.path.join(model_file_path, model_file_name), db_schema, generate_foreign_keys, log_model_loaded)
 
 

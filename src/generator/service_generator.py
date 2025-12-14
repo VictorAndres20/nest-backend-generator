@@ -77,10 +77,10 @@ class ServiceGenerator:
         self.content += "\n"
         self.content += "    //Create entity and assign data\n"
         self.content += "    const entity = this.repo.create({\n"
-        for i in range(2, len(list_attr)):
+        for i in range(1, len(list_attr)):
             attr_dict = list_attr[i]
             col = str(attr_dict["column"])
-            if col != "foreign_ref":
+            if col != "foreign_ref" and col != "PrimaryGeneratedColumn":
                 if col == "foreign":
                     foreign_variable_name = attr_dict["fe_module"] + "_id"
                     self.content += "      " + foreign_variable_name + ": dto." + foreign_variable_name + ",\n"

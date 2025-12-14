@@ -26,8 +26,10 @@ from src.helpers.write_file import write_code
 
 NEST_ROOT_PATH = "nest"
 NEST_SRC_PATH = f"{NEST_ROOT_PATH}/src"
-NEST_SRC_ENTITIES_PATH = f"{NEST_SRC_PATH}/_entities"
-NEST_SRC_ENUMS_PATH = f"{NEST_SRC_PATH}/_enums"
+NEST_ENTITIES_DIR_NAME = "_entities"
+NEST_SRC_ENTITIES_PATH = f"{NEST_SRC_PATH}/{NEST_ENTITIES_DIR_NAME}"
+NEST_ENUMS_DIR_NAME = "_enums"
+NEST_SRC_ENUMS_PATH = f"{NEST_SRC_PATH}/{NEST_ENUMS_DIR_NAME}"
 NEST_SRC_API_PATH = f"{NEST_SRC_PATH}/api"
 NEST_SRC_ASSETS_PATH = f"{NEST_SRC_PATH}/assets"
 
@@ -42,13 +44,20 @@ REACT_JS_SRC_HOOKS_PATH = f"{REACT_JS_SRC_PATH}/_hooks"
 
 REACT_TS_ROOT_PATH = "react-ts"
 REACT_TS_SRC_PATH = f"{REACT_TS_ROOT_PATH}/src"
-REACT_TS_SRC_API_CLIENT_PATH = f"{REACT_TS_SRC_PATH}/_api-client"
+REACT_TS_API_CLIENT_DIR_NAME = "_api-client"
+REACT_TS_SRC_API_CLIENT_PATH = f"{REACT_TS_SRC_PATH}/{REACT_TS_API_CLIENT_DIR_NAME}"
 REACT_TS_SRC_TYPES_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_types"
 REACT_TS_SRC_SERVICES_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_services"
 REACT_TS_SRC_HELPERS_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_helpers"
 REACT_TS_SRC_HOOKS_PATH = f"{REACT_TS_SRC_API_CLIENT_PATH}/_hooks"
 REACT_TS_SRC_SERVICES_COMMONS_PATH = f"{REACT_TS_SRC_SERVICES_PATH}/_commons"
 
+GENERATED_FOLDERS = [
+    NEST_ROOT_PATH,
+    DB_PATH,
+    REACT_JS_ROOT_PATH,
+    REACT_TS_ROOT_PATH,
+]
 
 def generate_module(models_path: str, file_path: str, db_schema: str, generate_sql_relations: bool = False, print_model_loaded: bool = False):
     models_path += "/" if not models_path.endswith("/") else ""
