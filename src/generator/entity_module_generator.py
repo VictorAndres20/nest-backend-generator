@@ -8,9 +8,9 @@ class EntityModuleGenerator(ModuleGenerator):
 
     def build(self, module_name: str, entity_class_name: str):
         self.main_imports.append("import { TypeOrmModule } from '@nestjs/typeorm';")
-        self.main_imports.append("import { " + entity_class_name + " } from './entity/"
+        self.main_imports.append("import { " + entity_class_name + " } from '../../_entities/"
                                  + module_name + ".entity';")
-        self.main_imports.append("import { " + entity_class_name + "Service } from './service/"
+        self.main_imports.append("import { " + entity_class_name + "Service } from './service/_"
                                  + module_name + ".service';")
         self.main_imports.append("import { " + entity_class_name + "Business } from './service/"
                                  + module_name + ".business';")

@@ -21,8 +21,8 @@ def create_folder(path):
 
 def copy_essentials(destination_dir: str):
     base_path = "essentials/"
-    commons_path = "commons"
-    utils_path = "_utils"
+    commons_path = "_commons"
+    utils_path = "utils"
     copy_folder(base_path + commons_path, destination_dir + commons_path)
     copy_folder(base_path + utils_path, destination_dir + utils_path)
 

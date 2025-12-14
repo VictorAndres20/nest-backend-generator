@@ -12,7 +12,7 @@ class BusinessGenerator:
         self.content = ""
 
     def build_additional_imports(self, module_name: str, entity_name: str):
-        self.imports += "import { " + entity_name + "Service } from './" + module_name + ".service';\n"
+        self.imports += "import { " + entity_name + "Service } from './_" + module_name + ".service';\n"
 
     def clean(self):
         self.imports = BUSINESS_BASE_IMPORTS

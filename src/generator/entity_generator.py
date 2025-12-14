@@ -88,10 +88,12 @@ class EntityGenerator:
             if bool(dict_attr["isEnum"]):
                 fe_entity = dict_attr["type"]
                 fe_module = get_module_name(dict_attr["fe_module"])
-                enum_import = "import { " + fe_entity + " } from '../../../_enums/" + \
+                enum_import = "import { " + fe_entity + " } from '../_enums/" + \
                                       fe_module + ".enum';\n"
+                enum_dto_import = "import { " + fe_entity + " } from '../../../_enums/" + \
+                              fe_module + ".enum';\n"
                 self.class_imports += enum_import
-                self.dto_imports += enum_import
+                self.dto_imports += enum_dto_import
 
             # Second FOREIGN ENTITIES
 
@@ -101,9 +103,7 @@ class EntityGenerator:
                 else:
                     has_many_to_one = True
                 fe_module = get_module_name(dict_attr["fe_module"])
-                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from '../../" + \
-                                      fe_module + "/entity/" + \
-                                      fe_module + ".entity';\n"
+                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from './" + fe_module + ".entity';\n"
 
             # Third PK TYPE
             if bool(dict_attr["is_primary_key"]):

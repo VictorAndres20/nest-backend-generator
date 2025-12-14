@@ -3,7 +3,7 @@ from typing import List
 from src.helpers.tp_pascal_case import to_camel_case
 
 SERVICE_BASE_IMPORTS = "import { Injectable } from '@nestjs/common';\n" \
-                       "import { BasicCrudService } from '../../../commons/services/crud.service';\n" \
+                       "import { BasicCrudService } from '../../../_commons/services/crud.service';\n" \
                        "import { InjectRepository } from '@nestjs/typeorm';\nimport { Repository } from 'typeorm';\n"
 
 
@@ -15,8 +15,8 @@ class ServiceGenerator:
         self.content = ""
 
     def build_additional_imports(self, module_name: str, entity_name: str):
-        self.imports += "import { " + entity_name + " } from '../entity/" + module_name + ".entity';\n"
-        self.imports += "import { " + entity_name + "DTO } from '../entity/" + module_name + ".dto';\n"
+        self.imports += "import { " + entity_name + " } from '../../../_entities/" + module_name + ".entity';\n"
+        self.imports += "import { " + entity_name + "DTO } from '../model/" + module_name + ".dto';\n"
 
     def clean(self):
         self.imports = SERVICE_BASE_IMPORTS

@@ -26,6 +26,7 @@ from src.helpers.write_file import write_code
 
 NEST_ROOT_PATH = "nest"
 NEST_SRC_PATH = f"{NEST_ROOT_PATH}/src"
+NEST_SRC_ENTITIES_PATH = f"{NEST_SRC_PATH}/_entities"
 NEST_SRC_ENUMS_PATH = f"{NEST_SRC_PATH}/_enums"
 NEST_SRC_API_PATH = f"{NEST_SRC_PATH}/api"
 NEST_SRC_ASSETS_PATH = f"{NEST_SRC_PATH}/assets"
@@ -56,6 +57,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
     create_folder(models_path + NEST_ROOT_PATH)
     create_folder(models_path + NEST_SRC_PATH)
+    create_folder(models_path + NEST_SRC_ENTITIES_PATH)
     create_folder(models_path + NEST_SRC_ENUMS_PATH)
     create_folder(models_path + NEST_SRC_API_PATH)
     create_folder(models_path + NEST_SRC_ASSETS_PATH)
@@ -186,7 +188,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         # Create Nest entity folders
 
         create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name)
-        create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/entity")
+        create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/model")
         create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/service")
         create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/controller")
 
@@ -194,16 +196,16 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
         entity_generator.clean()
         entity_generator.build_class(list_attr)
-        write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/entity/" + module_name + ".entity.ts",
+        write_code(models_path + f"{NEST_SRC_ENTITIES_PATH}/" + module_name + ".entity.ts",
                    entity_generator.content, False)
-        write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/entity/" + module_name + ".dto.ts",
+        write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/model/" + module_name + ".dto.ts",
                    entity_generator.dto_content, False)
 
         # Generate and write Nest service
 
         service_generator.clean()
         service_generator.build_class(module_name, class_dict, pk_dict, list_attr)
-        write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/service/" + module_name + ".service.ts",
+        write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/service/_" + module_name + ".service.ts",
                    service_generator.content, False)
 
         # Generate and write Nest business file

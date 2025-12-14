@@ -1,7 +1,7 @@
 BASE_IMPORTS = "import {\n  Controller,\n  // Get,\n  // Post,\n  // Body,\n  // HttpException,\n  // Param,\n  // UseGuards,\n} " \
                        "from '@nestjs/common';\n// import { HttpResponse } " \
-                       "from '../../../commons/responses/http-response';" \
-                       "\nimport { BasicRestController } from '../../../commons/controllers/rest.controller';" \
+                       "from '../../../_commons/responses/http-response';" \
+                       "\nimport { BasicRestController } from '../../../_commons/controllers/rest.controller';" \
                        "\n// import { AuthGuard } from '@nestjs/passport';\n"
 
 
@@ -12,8 +12,8 @@ class ControllerGenerator:
         self.content = ""
 
     def build_additional_imports(self, module_name: str, entity_name: str):
-        self.imports += "import { " + entity_name + " } from '../entity/" + module_name + ".entity';\n"
-        self.imports += "import { " + entity_name + "DTO } from '../entity/" + module_name + ".dto';\n"
+        self.imports += "import { " + entity_name + " } from '../../../_entities/" + module_name + ".entity';\n"
+        self.imports += "import { " + entity_name + "DTO } from '../model/" + module_name + ".dto';\n"
         self.imports += "import { " + entity_name + "Business } from '../service/" + module_name + ".business';\n"
 
     def clean(self):
