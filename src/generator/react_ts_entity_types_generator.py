@@ -103,6 +103,7 @@ class ReactTSEntityTypesGenerator:
         self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["type"] + check_null_type(dict_class) + ";\n"
 
     def build_main_content_many_to_one(self, dict_class: dict):
+        self.content += "  " + dict_class["name"] + "_id" + check_nullish_operator(dict_class) + ": " + dict_class["fe_pk_type"] + check_null_type(dict_class) + ";\n"
         self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["foreign_entity"] + "EntityType" + check_null_type(dict_class) + ";\n"
 
     def build_main_content_one_to_many(self, dict_class: dict):
@@ -118,7 +119,13 @@ class ReactTSEntityTypesGenerator:
         self.dto_content += "export interface " + dict_class["name"] + "DTO {\n"
 
     def build_dto_main_content(self, dict_class: dict, type_name: str):
-        self.dto_content += "  " + dict_class["name"] + check_nullish_operator(dict_class, True) + ": " + type_name + ";\n"
+        if dict_class["column"] == "foreign":
+            self.dto_content += "  " + dict_class["name"] + "_id" + check_nullish_operator(dict_class, True) + ": " + type_name + ";\n"
+        elif dict_class["column"] == "foreign_ref":
+            # self.dto_content += "  " + dict_class["name"] + "_id_list" + "?: " + type_name + "[];\n"
+            pass
+        else:
+            self.dto_content += "  " + dict_class["name"] + check_nullish_operator(dict_class, True) + ": " + type_name + ";\n"
 
     def build_dto_close(self):
         self.dto_content += "}"
@@ -130,6 +137,7 @@ class ReactTSEntityTypesGenerator:
         self.query_content += "  " + dict_class["name"] + "?: " + dict_class["type"] + ";\n"
 
     def build_query_main_content_many_to_one(self, dict_class: dict):
+        self.query_content += "  " + dict_class["name"] + "_id" + check_nullish_operator(dict_class) + ": " + dict_class["fe_pk_type"] + check_null_type(dict_class) + ";\n"
         self.query_content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "EntityQuery" + ";\n"
 
     def build_query_main_content_one_to_many(self, dict_class: dict):

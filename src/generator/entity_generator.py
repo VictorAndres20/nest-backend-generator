@@ -143,6 +143,7 @@ class EntityGenerator:
                         self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
                     elif foreign_type == "foreign_ref":
                         self.build_main_content_one_to_many(dict_attr)
+                        self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
                 elif bool(dict_attr["isEnum"]):
                     self.build_main_content_enum(dict_attr)
                     self.build_dto_main_content(dict_attr, dict_attr["type"])
@@ -204,8 +205,11 @@ class EntityGenerator:
     def build_dto_main_content(self, dict_class: dict, type_name: str):
         if dict_class["column"] == "foreign":
             self.dto_content += "  " + dict_class["name"] + "_id" + check_nullish_operator(dict_class, True) + ": " + type_name + ";\n"
-
-        self.dto_content += "  " + dict_class["name"] + check_nullish_operator(dict_class,True) + ": " + type_name + ";\n"
+        elif dict_class["column"] == "foreign_ref":
+            # self.dto_content += "  " + dict_class["name"] + "_id_list" + "?: " + type_name + "[];\n"
+            pass
+        else:
+            self.dto_content += "  " + dict_class["name"] + check_nullish_operator(dict_class,True) + ": " + type_name + ";\n"
 
     def build_dto_close(self):
         self.dto_content += "}"

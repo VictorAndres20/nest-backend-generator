@@ -1,6 +1,5 @@
 from typing import List
 
-from src.helpers.folder_handler import get_module_name
 from src.helpers.tp_pascal_case import to_camel_case
 
 SERVICE_BASE_IMPORTS = "import { Injectable } from '@nestjs/common';\n" \
@@ -25,13 +24,15 @@ class ServiceGenerator:
         self.content = ""
 
     def build_class_imports(self, list_attr: List):
-        for i in range(len(list_attr)):
-            dict_attr = list_attr[i]
-            if str(dict_attr["column"]) == "foreign":
-                fe_module = get_module_name(dict_attr["fe_module"])
-                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from '../../" + \
-                                      fe_module + "/entity/" + \
-                                      fe_module + ".entity';\n"
+        # Not necessary to import foreign modules since we use now RelationId decorator in entity
+        pass
+        #for i in range(len(list_attr)):
+        #    dict_attr = list_attr[i]
+        #    if str(dict_attr["column"]) == "foreign":
+        #        fe_module = get_module_name(dict_attr["fe_module"])
+        #        self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from '../../" + \
+        #                              fe_module + "/entity/" + \
+        #                              fe_module + ".entity';\n"
 
     def build_class(self, module_name: str, entity_dict: dict, pk_dict: dict, list_attr: List):
         self.build_additional_imports(module_name, entity_dict["name"])
@@ -63,10 +64,10 @@ class ServiceGenerator:
         self.content += "  ) {\n    super();\n  }\n\n"
 
     def build_find_id_function(self, dict_class: dict, pk_dict: dict):
-        self.content += "  override findById(id?: " + pk_dict["type"] + " | null): Promise<" + dict_class["name"] + " | null> {\n"
-        self.content += "    if( id == null ) return Promise.resolve(null);\n\n"
+        self.content += "  override findById(" + pk_dict["name"] + "?: " + pk_dict["type"] + " | null): Promise<" + dict_class["name"] + " | null> {\n"
+        self.content += "    if( " + pk_dict["name"] + " == null ) return Promise.resolve(null);\n\n"
         self.content += "    try{\n"
-        self.content += "      return this.findOne({where: { " + pk_dict["name"] + ": id } });\n"
+        self.content += "      return this.findOne({where: { " + pk_dict["name"] + " } });\n"
         self.content += "    } catch(err){\n      throw new Error((err as Error).message);\n    }\n  }\n\n"
 
     def build_base_creation_function(self, dict_class: dict, list_attr: List):
@@ -74,22 +75,18 @@ class ServiceGenerator:
         self.content += "    // Data integrity validations\n"
         self.content += "    if(! dto) throw new Error('DTO empty');\n"
         self.content += "\n"
-        self.content += "    //Assign data\n"
-        self.content += "    const entity = new " + dict_class["name"] + "();\n"
+        self.content += "    //Create entity and assign data\n"
+        self.content += "    const entity = this.repo.create({\n"
         for i in range(2, len(list_attr)):
             attr_dict = list_attr[i]
             col = str(attr_dict["column"])
             if col != "foreign_ref":
                 if col == "foreign":
-                    foreign_variable_name = to_camel_case(attr_dict["fe_module"])
-                    self.content += "    const " + foreign_variable_name + " = new " + \
-                                    attr_dict["foreign_entity"] + "();\n"
-                    self.content += "    " + foreign_variable_name + "." + attr_dict["fe_pk"]\
-                                    + " = dto." + attr_dict["name"] + ";\n"
-                    self.content += "    entity." + attr_dict["name"] + " = " + \
-                                    foreign_variable_name + ";\n"
+                    foreign_variable_name = attr_dict["fe_module"] + "_id"
+                    self.content += "      " + foreign_variable_name + ": dto." + foreign_variable_name + ",\n"
                 else:
-                    self.content += "    entity." + attr_dict["name"] + " = dto." + attr_dict["name"] + ";\n"
+                    self.content += "      " + attr_dict["name"] + ": dto." + attr_dict["name"] + ",\n"
+        self.content += "    });\n\n"
         self.content += "    return entity;\n  }\n\n"
 
     def build_validation_before_creation_function(self, dict_class: dict):
@@ -114,12 +111,9 @@ class ServiceGenerator:
             col = str(attr_dict["column"])
             if col != "foreign_ref":
                 if col == "foreign":
-                    foreign_variable_name = to_camel_case(attr_dict["fe_module"])
-                    self.content += "    if(dto." + attr_dict["name"] + " != null) {\n"
-                    self.content += "      const " + foreign_variable_name + " = new " + attr_dict["foreign_entity"] + "();\n"
-                    self.content += "      " + foreign_variable_name + "." + attr_dict["fe_pk"] + " = dto." + attr_dict["name"] + ";\n"
-                    self.content += "      entity." + attr_dict["name"] + " = " + foreign_variable_name + ";\n"
-                    self.content += "    }\n\n"
+                    foreign_variable_name = attr_dict["fe_module"] + "_id"
+                    self.content += "    entity." + foreign_variable_name + " = dto." + foreign_variable_name + \
+                                    " ?? " + " entity." + foreign_variable_name + ";\n"
                 else:
                     self.content += "    entity." + attr_dict["name"] + " = dto." + attr_dict["name"] + \
                                     " ?? " + " entity." + attr_dict["name"] + ";\n"
