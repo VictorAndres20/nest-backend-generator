@@ -1,10 +1,8 @@
-const apiUrl = import.meta.env.VITE_API_URL;
-const apiPrefix = import.meta.env.VITE_API_PREFIX;
-const isProd = import.meta.env.VITE_IS_PROD;
+// Set here api base urls from environment variables
+export const API_URL = import.meta.env.VITE_API_URL;
 
-export const API_URL = apiUrl;
-export const API_PREFIX_PATH = apiPrefix ?? '';
-export const DEV_API_HOST = `http://${API_URL}${API_PREFIX_PATH}`;
-export const PROD_API_HOST = `https://${API_URL}${API_PREFIX_PATH}`;
+// Set here api prefix paths if they are defined in environment variables
+export const API_URL_PREFIX_PATH = import.meta.env.VITE_API_URL_PREFIX;
 
-export const MAIN_API_HOST = isProd ? PROD_API_HOST : DEV_API_HOST;
+// Construct full API host URLs to use in api calls
+export const MAIN_API_HOST = `${API_URL}${API_URL_PREFIX_PATH}`;
