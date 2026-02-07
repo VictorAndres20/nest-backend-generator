@@ -113,7 +113,7 @@ def build_list_modules_from_draw_db_io(path: str):
             table_field_id = table_field["id"]
             table_field_name = table_field["name"]
             table_field_type = table_field["type"]
-            table_field_size = table_field["size"]
+            table_field_size = table_field["size"] if "size" in table_field.keys() else ""
             table_field_default = table_field["default"]
             is_primary_field = table_field["primary"]
             is_not_null_field = table_field["notNull"]
