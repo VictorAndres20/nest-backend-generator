@@ -187,6 +187,9 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         # Rename module_name
         module_name = get_module_name(module_name)
 
+        if len(list_attr) == 4 and list_attr[1]["is_primary_key"] and list_attr[2]["is_primary_key"] and list_attr[3]["is_primary_key"]:
+            raise Exception(f"{class_dict['table_name']} has more than two primary keys. Entity not supported. Use just one primary key instead.")
+
         if len(list_attr) == 3 and list_attr[1]["is_primary_key"] and list_attr[2]["is_primary_key"]:
             many_to_many_tables.append(class_dict['table_name'])
             # print(f"Many to many table detected ('{class_dict['table_name']}'), 2 PK table, skipping model for app code")
