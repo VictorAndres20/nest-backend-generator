@@ -56,7 +56,7 @@ class ReactTSEntityTypesGenerator:
                               fe_module + ".type';\n"
                 self.class_imports += enum_import
 
-            if str(dict_attr["column"]).startswith("foreign"):
+            if str(dict_attr["column"]).startswith("foreign") or str(dict_attr["column"]).startswith("many_to_many"):
                 fe_module = get_module_name(dict_attr["fe_module"])
                 self.class_imports += "import {\n  " + dict_attr["foreign_entity"] + "EntityQuery,\n  " + dict_attr["foreign_entity"] + "EntityType,\n} from './" + \
                                       fe_module + ".types';\n"
@@ -81,6 +81,13 @@ class ReactTSEntityTypesGenerator:
                     elif foreign_type == "foreign_ref":
                         self.build_main_content_one_to_many(dict_attr)
                         self.build_query_main_content_one_to_many(dict_attr)
+                elif str(dict_attr["column"]) == "many_to_many_owner":
+                    self.build_main_content_many_to_many(dict_attr)
+                    self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
+                    self.build_query_main_content_many_to_many(dict_attr)
+                elif str(dict_attr["column"]) == "many_to_many":
+                    self.build_main_content_many_to_many(dict_attr)
+                    self.build_query_main_content_many_to_many(dict_attr)
                 else:
                     self.build_main_content(dict_attr)
                     self.build_dto_main_content(dict_attr, dict_attr["type"])
@@ -105,6 +112,9 @@ class ReactTSEntityTypesGenerator:
     def build_main_content_many_to_one(self, dict_class: dict):
         self.content += "  " + dict_class["name"] + "_id" + check_nullish_operator(dict_class) + ": " + dict_class["fe_pk_type"] + check_null_type(dict_class) + ";\n"
         self.content += "  " + dict_class["name"] + check_nullish_operator(dict_class) + ": " + dict_class["foreign_entity"] + "EntityType" + check_null_type(dict_class) + ";\n"
+
+    def build_main_content_many_to_many(self, dict_class: dict):
+        self.content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "EntityType[];\n"
 
     def build_main_content_one_to_many(self, dict_class: dict):
         self.content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "EntityType[];\n"
@@ -141,6 +151,9 @@ class ReactTSEntityTypesGenerator:
         self.query_content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "EntityQuery" + ";\n"
 
     def build_query_main_content_one_to_many(self, dict_class: dict):
+        self.query_content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "EntityQuery[];\n"
+
+    def build_query_main_content_many_to_many(self, dict_class: dict):
         self.query_content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "EntityQuery[];\n"
 
     def build_query_close(self):

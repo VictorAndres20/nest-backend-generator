@@ -83,7 +83,11 @@ def build_list_modules_from_draw_db_io(path: str):
 
     table_ids_dictionary = {}
 
+    many_to_many_tables = []
+
     for table in data["tables"]:
+        pk_counter = 0
+
         table_id = table["id"]
         table_name = table["name"]
         table_fields = table["fields"]
@@ -106,6 +110,7 @@ def build_list_modules_from_draw_db_io(path: str):
                 'db_type': "",
                 'default_value': "",
                 'null': "",
+                'many_to_many_table': '',
             }
         ]}
 
@@ -117,6 +122,9 @@ def build_list_modules_from_draw_db_io(path: str):
             table_field_default = table_field["default"]
             is_primary_field = table_field["primary"]
             is_not_null_field = table_field["notNull"]
+
+            if is_primary_field:
+                pk_counter += 1
 
             is_not_increment_field_by_type = get_is_not_autoincrement_by_type(table_field_type)
             is_not_increment_field = is_not_increment_field_by_type if is_not_increment_field_by_type is not None \
@@ -147,8 +155,12 @@ def build_list_modules_from_draw_db_io(path: str):
                     'db_type': table_field_type if table_field_size == '' else f"{table_field_type}({table_field_size})",
                     'default_value': table_field_default,
                     'null': "x" if not is_not_null_field else "",
+                    'many_to_many_table': '',
                 }
             )
+
+        if pk_counter == 2:
+            many_to_many_tables.append(table_id)
 
         list_modules.append(module_dict)
 
@@ -160,56 +172,140 @@ def build_list_modules_from_draw_db_io(path: str):
         origin_end_table_id = relation["endTableId"]
         origin_end_field_id = relation["endFieldId"]
 
-        start_table_id = origin_start_table_id if cardinality == "many_to_one" else origin_end_table_id
-        start_field_id = origin_start_field_id if cardinality == "many_to_one" else origin_end_field_id
-        end_table_id = origin_end_table_id if cardinality == "many_to_one" else origin_start_table_id
-        end_field_id = origin_end_field_id if cardinality == "many_to_one" else origin_start_field_id
+        if origin_start_table_id in many_to_many_tables:
+            many_to_many_table_dict = table_ids_dictionary[origin_start_table_id]
+            child_table_dict = table_ids_dictionary[origin_end_table_id]
 
-        parent_table_dict = table_ids_dictionary[end_table_id]
-        child_table_dict = table_ids_dictionary[start_table_id]
+            many_to_many_table_name = many_to_many_table_dict["name"]
+            child_table_name = child_table_dict["name"]
 
-        parent_table_name = parent_table_dict["name"]
-        child_table_name = child_table_dict["name"]
+            is_many_to_many_owner = child_table_name == list(many_to_many_table_dict['field_ids'].values())[0]["name"]
 
-        child_field_dict = table_ids_dictionary[start_table_id]['field_ids'][start_field_id]
-        child_field_name = child_field_dict["name"]
+            owner_many_to_many_name = list(many_to_many_table_dict['field_ids'].values())[0]["name"]
+            child_many_to_many_name = list(many_to_many_table_dict['field_ids'].values())[1]["name"]
 
-        parent_field_dict = table_ids_dictionary[end_table_id]['field_ids'][end_field_id]
-        parent_field_name = parent_field_dict["name"]
+            parent_table_module = None
+            module_idx = find_index_by_key(child_many_to_many_name if is_many_to_many_owner else owner_many_to_many_name, list_modules)
+            if module_idx != -1:
+                parent_table_module = list_modules[module_idx]
 
-        module_idx = find_index_by_key(child_table_name, list_modules)
-        if module_idx != -1:
-            child_field_idx = find_index('name', child_field_name,list_modules[module_idx][child_table_name])
-            if child_field_idx != -1:
-                list_modules[module_idx][child_table_name][child_field_idx]["column"] = "foreign"
-                list_modules[module_idx][child_table_name][child_field_idx]["foreign_entity"] = to_pascal_case(parent_table_name)
-                list_modules[module_idx][child_table_name][child_field_idx]["fe_property"] = f"{child_table_name}_list"
-                list_modules[module_idx][child_table_name][child_field_idx]["fe_pk_type"] = parent_field_dict["type"]
-                list_modules[module_idx][child_table_name][child_field_idx]["fe_pk"] = parent_field_name
-                list_modules[module_idx][child_table_name][child_field_idx]["fe_module"] = parent_table_name
-                # print(list_modules[module_idx][child_table_name][child_field_idx])
+            if parent_table_module is None:
+                print(many_to_many_table_dict)
+                print(child_table_dict)
+                print(is_many_to_many_owner)
+                raise Exception("Parent table module not found for Many to Many relationship")
 
-        module_idx = find_index_by_key(parent_table_name, list_modules)
-        if module_idx != -1:
-            new_list = list_modules[module_idx][parent_table_name]
-            new_list.append(
-                {
-                    'name': f"{child_table_name}_list",
+            child_table_module = None
+            module_idx = find_index_by_key(
+                owner_many_to_many_name if is_many_to_many_owner else child_many_to_many_name, list_modules)
+            if module_idx != -1:
+                child_table_module = list_modules[module_idx]
+
+            if child_table_module is None:
+                print(many_to_many_table_dict)
+                print(child_table_dict)
+                print(is_many_to_many_owner)
+                raise Exception("Child table module not found for Many to Many relationship")
+
+            parent_table_module_name = list(parent_table_module.keys())[0]
+            parent_values_list = list(parent_table_module.values())
+            parent_table_module_pk_dict = parent_values_list[0][1]
+            parent_table_name = parent_table_module_pk_dict['table_name']
+
+            child_table_module_pk_dict = list(child_table_module.values())[0][1]
+
+            child_field_dict = table_ids_dictionary[origin_start_table_id]['field_ids'][origin_start_field_id]
+            child_field_name = child_field_dict["name"]
+
+            module_idx = find_index_by_key(child_table_name, list_modules)
+            if module_idx != -1:
+                new_field = {
+                    'name': f"{parent_table_name}_list",
                     "is_primary_key": False,
-                    'type': f"{to_pascal_case(child_table_name)}[]",
+                    'type': f"{to_pascal_case(parent_table_name)}[]",
                     'isEnum': False,
-                    'column': "foreign_ref",
-                    'table_name': parent_table_name,
-                    'foreign_entity': to_pascal_case(child_table_name),
-                    'fe_property': child_field_name,
-                    'fe_pk_type': child_field_dict["type"],
-                    'fe_pk': child_table_dict["primary"],
-                    'fe_module': child_table_name,
-                    'db_type': "",
+                    'column': f"many_to_many{'_owner' if is_many_to_many_owner else ''}",
+                    'table_name': child_table_name,
+                    'foreign_entity': to_pascal_case(parent_table_name),
+                    'fe_property': f"{child_table_name}_list",
+                    'fe_pk_type': parent_table_module_pk_dict['type'],
+                    'fe_pk': parent_table_module_pk_dict['name'],
+                    'fe_module': parent_table_module_name,
+                    'db_type': '',
                     'default_value': "",
                     'null': "",
+                    'many_to_many_table': many_to_many_table_name,
                 }
-            )
-            list_modules[module_idx][parent_table_name] = new_list
+                list_modules[module_idx][child_table_name].append(
+                    new_field
+                )
+
+            module_idx = find_index_by_key(many_to_many_table_name, list_modules)
+            if module_idx != -1:
+                many_to_many_field_idx = find_index('name', child_field_name, list_modules[module_idx][many_to_many_table_name])
+                if many_to_many_field_idx != -1:
+                    list_modules[module_idx][many_to_many_table_name][many_to_many_field_idx]["column"] = "foreign"
+                    list_modules[module_idx][many_to_many_table_name][many_to_many_field_idx]["foreign_entity"] = to_pascal_case(
+                        child_table_name)
+                    list_modules[module_idx][many_to_many_table_name][many_to_many_field_idx][
+                        "fe_property"] = f"{child_table_name}_list"
+                    list_modules[module_idx][many_to_many_table_name][many_to_many_field_idx]["fe_pk_type"] = child_table_module_pk_dict[
+                        "type"]
+                    list_modules[module_idx][many_to_many_table_name][many_to_many_field_idx]["fe_pk"] = child_table_module_pk_dict['name']
+                    list_modules[module_idx][many_to_many_table_name][many_to_many_field_idx]["fe_module"] = child_table_name
+                    # print(list_modules[module_idx][many_to_many_table_name][many_to_many_field_idx])
+        else:
+            start_table_id = origin_start_table_id if cardinality == "many_to_one" else origin_end_table_id
+            start_field_id = origin_start_field_id if cardinality == "many_to_one" else origin_end_field_id
+            end_table_id = origin_end_table_id if cardinality == "many_to_one" else origin_start_table_id
+            end_field_id = origin_end_field_id if cardinality == "many_to_one" else origin_start_field_id
+
+            parent_table_dict = table_ids_dictionary[end_table_id]
+            child_table_dict = table_ids_dictionary[start_table_id]
+
+            parent_table_name = parent_table_dict["name"]
+            child_table_name = child_table_dict["name"]
+
+            child_field_dict = table_ids_dictionary[start_table_id]['field_ids'][start_field_id]
+            child_field_name = child_field_dict["name"]
+
+            parent_field_dict = table_ids_dictionary[end_table_id]['field_ids'][end_field_id]
+            parent_field_name = parent_field_dict["name"]
+
+            module_idx = find_index_by_key(child_table_name, list_modules)
+            if module_idx != -1:
+                child_field_idx = find_index('name', child_field_name,list_modules[module_idx][child_table_name])
+                if child_field_idx != -1:
+                    list_modules[module_idx][child_table_name][child_field_idx]["column"] = "foreign"
+                    list_modules[module_idx][child_table_name][child_field_idx]["foreign_entity"] = to_pascal_case(parent_table_name)
+                    list_modules[module_idx][child_table_name][child_field_idx]["fe_property"] = f"{child_table_name}_list"
+                    list_modules[module_idx][child_table_name][child_field_idx]["fe_pk_type"] = parent_field_dict["type"]
+                    list_modules[module_idx][child_table_name][child_field_idx]["fe_pk"] = parent_field_name
+                    list_modules[module_idx][child_table_name][child_field_idx]["fe_module"] = parent_table_name
+                    # print(list_modules[module_idx][child_table_name][child_field_idx])
+
+            module_idx = find_index_by_key(parent_table_name, list_modules)
+            if module_idx != -1:
+                new_list = list_modules[module_idx][parent_table_name]
+                new_list.append(
+                    {
+                        'name': f"{child_table_name}_list",
+                        "is_primary_key": False,
+                        'type': f"{to_pascal_case(child_table_name)}[]",
+                        'isEnum': False,
+                        'column': "foreign_ref",
+                        'table_name': parent_table_name,
+                        'foreign_entity': to_pascal_case(child_table_name),
+                        'fe_property': child_field_name,
+                        'fe_pk_type': child_field_dict["type"],
+                        'fe_pk': child_table_dict["primary"],
+                        'fe_module': child_table_name,
+                        'db_type': "",
+                        'default_value': "",
+                        'null': "",
+                        'many_to_many_table': '',
+                    }
+                )
+                list_modules[module_idx][parent_table_name] = new_list
 
     return list_modules, enums

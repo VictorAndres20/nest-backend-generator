@@ -171,6 +171,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
     modules = []
     module_names = []
+    many_to_many_tables = []
     for i in list_modules:
         module_name = list(i.keys())[0]
 
@@ -186,13 +187,18 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         # Rename module_name
         module_name = get_module_name(module_name)
 
-        module_names.append(module_name)
-        modules.append({"class": class_dict["name"], "module": module_name})
+        if len(list_attr) == 3 and list_attr[1]["is_primary_key"] and list_attr[2]["is_primary_key"]:
+            many_to_many_tables.append(class_dict['table_name'])
+            # print(f"Many to many table detected ('{class_dict['table_name']}'), 2 PK table, skipping model for app code")
+            continue
 
         # PK row should be first row
         pk_dict = list_attr[1]
         if not pk_dict["is_primary_key"]:
             raise Exception(f"{module_name} has no primary key or is not it first field in the model")
+
+        module_names.append(module_name)
+        modules.append({"class": class_dict["name"], "module": module_name})
 
         # Create Nest entity folders
 
@@ -204,7 +210,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         # Generate Nest entity with DTO
 
         entity_generator.clean()
-        entity_generator.build_class(list_attr)
+        entity_generator.build_class(list_attr, pk_dict)
         write_code(models_path + f"{NEST_SRC_ENTITIES_PATH}/" + module_name + ".entity.ts",
                    entity_generator.content, False)
         write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/model/" + module_name + ".dto.ts",

@@ -78,6 +78,8 @@ class EntityGenerator:
     def build_class_imports(self, list_attr: List):
         has_one_to_many = False
         has_many_to_one = False
+        has_many_to_many = False
+        has_many_to_many_owner = False
         has_pk_generated = False
         has_pk = False
         for i in range(len(list_attr)):
@@ -105,6 +107,13 @@ class EntityGenerator:
                 fe_module = get_module_name(dict_attr["fe_module"])
                 self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from './" + fe_module + ".entity';\n"
 
+            if str(dict_attr["column"]).startswith("many_to_many"):
+                has_many_to_many = True
+                if str(dict_attr["column"]).endswith("owner"):
+                    has_many_to_many_owner = True
+                fe_module = get_module_name(dict_attr["fe_module"])
+                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from './" + fe_module + ".entity';\n"
+
             # Third PK TYPE
             if bool(dict_attr["is_primary_key"]):
                 if str(dict_attr["column"]).endswith("GeneratedColumn"):
@@ -122,9 +131,13 @@ class EntityGenerator:
             self.class_imports += "  RelationId,\n"
         if has_one_to_many:
             self.class_imports += "  OneToMany,\n"
+        if has_many_to_many:
+            self.class_imports += "  ManyToMany,\n"
+        if has_many_to_many_owner:
+            self.class_imports += "  JoinTable,\n"
         self.class_imports += "} from 'typeorm';\n"
 
-    def build_class(self, list_attr: List):
+    def build_class(self, list_attr: List, pk_dict: dict):
         self.build_headers(list_attr)
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
@@ -144,6 +157,12 @@ class EntityGenerator:
                     elif foreign_type == "foreign_ref":
                         self.build_main_content_one_to_many(dict_attr)
                         self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
+                elif str(dict_attr["column"]) == "many_to_many_owner":
+                    self.build_main_content_many_to_many_owner(dict_attr, pk_dict)
+                    self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
+                elif str(dict_attr["column"]) == "many_to_many":
+                    self.build_main_content_many_to_many(dict_attr)
+                    self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
                 elif bool(dict_attr["isEnum"]):
                     self.build_main_content_enum(dict_attr)
                     self.build_dto_main_content(dict_attr, dict_attr["type"])
@@ -184,6 +203,27 @@ class EntityGenerator:
         self.content += f"  {dict_class["name"]}_id{check_nullish_operator(dict_class)}: {dict_class["fe_pk_type"] + check_null_type(dict_class)}\n"
         self.content += "\n"
 
+    def build_main_content_many_to_many_owner(self, dict_class: dict, pk_dict: dict):
+        self.content += "  " + self.decorator + "ManyToMany(() => " + dict_class["foreign_entity"] + ", e => e." + \
+                        dict_class["fe_property"] + ")\n"
+        self.content += "  " + self.decorator + 'JoinTable({\n'
+        self.content += '    name: "' + dict_class["many_to_many_table"] + '",\n'
+        self.content += '    joinColumn: {\n'
+        self.content += '      name: "' + dict_class["table_name"] + '",\n'
+        self.content += '      referencedColumnName: "' + pk_dict["name"] + '",\n'
+        self.content += '     },\n'
+        self.content += '    inverseJoinColumn: {\n'
+        self.content += '      name: "' + dict_class["fe_module"] + '",\n'
+        self.content += '      referencedColumnName: "' + dict_class["fe_pk"] + '",\n'
+        self.content += '     },\n'
+        self.content += '   })\n'
+        self.content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "[];\n\n"
+
+    def build_main_content_many_to_many(self, dict_class: dict):
+        self.content += "  " + self.decorator + "ManyToMany(() => " + dict_class["foreign_entity"] + ", e => e." + \
+                        dict_class["fe_property"] + ")\n"
+        self.content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "[];\n\n"
+
     def build_main_content_one_to_many(self, dict_class: dict):
         self.content += "  " + self.decorator + 'OneToMany(() => ' + dict_class["foreign_entity"] + ', (e) => e.' + \
                         dict_class["fe_property"] + ')\n'
@@ -207,6 +247,12 @@ class EntityGenerator:
             self.dto_content += "  " + dict_class["name"] + "_id" + check_nullish_operator(dict_class, True) + ": " + type_name + ";\n"
         elif dict_class["column"] == "foreign_ref":
             # self.dto_content += "  " + dict_class["name"] + "_id_list" + "?: " + type_name + "[];\n"
+            pass
+        elif dict_class["column"] == "many_to_many_owner":
+            self.dto_content += "  " + dict_class["name"] + "_ids" + "?: " + type_name + "[];\n"
+            pass
+        elif dict_class["column"] == "many_to_many":
+            # self.dto_content += "  " + dict_class["name"] + "_ids" + "?: " + type_name + "[];\n"
             pass
         else:
             self.dto_content += "  " + dict_class["name"] + check_nullish_operator(dict_class,True) + ": " + type_name + ";\n"
