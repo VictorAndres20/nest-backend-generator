@@ -76,6 +76,8 @@ class EntityGenerator:
         self.dto_content = ""
 
     def build_class_imports(self, list_attr: List):
+        entity_import_modules = []
+
         has_one_to_many = False
         has_many_to_one = False
         has_many_to_many = False
@@ -94,8 +96,10 @@ class EntityGenerator:
                                       fe_module + ".enum';\n"
                 enum_dto_import = "import { " + fe_entity + " } from '../../../_enums/" + \
                               fe_module + ".enum';\n"
-                self.class_imports += enum_import
-                self.dto_imports += enum_dto_import
+                if fe_module not in entity_import_modules:
+                    self.class_imports += enum_import
+                    self.dto_imports += enum_dto_import
+                    entity_import_modules.append(fe_module)
 
             # Second FOREIGN ENTITIES
 
@@ -105,14 +109,18 @@ class EntityGenerator:
                 else:
                     has_many_to_one = True
                 fe_module = get_module_name(dict_attr["fe_module"])
-                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from './" + fe_module + ".entity';\n"
+                if fe_module not in entity_import_modules:
+                    self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from './" + fe_module + ".entity';\n"
+                    entity_import_modules.append(fe_module)
 
             if str(dict_attr["column"]).startswith("many_to_many"):
                 has_many_to_many = True
                 if str(dict_attr["column"]).endswith("owner"):
                     has_many_to_many_owner = True
                 fe_module = get_module_name(dict_attr["fe_module"])
-                self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from './" + fe_module + ".entity';\n"
+                if fe_module not in entity_import_modules:
+                    self.class_imports += "import { " + dict_attr["foreign_entity"] + " } from './" + fe_module + ".entity';\n"
+                    entity_import_modules.append(fe_module)
 
             # Third PK TYPE
             if bool(dict_attr["is_primary_key"]):
@@ -138,6 +146,7 @@ class EntityGenerator:
         self.class_imports += "} from 'typeorm';\n"
 
     def build_class(self, list_attr: List, pk_dict: dict):
+        fe_entity_variables = []
         self.build_headers(list_attr)
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
@@ -155,7 +164,7 @@ class EntityGenerator:
                         self.build_main_content_many_to_one(dict_attr)
                         self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
                     elif foreign_type == "foreign_ref":
-                        self.build_main_content_one_to_many(dict_attr)
+                        self.build_main_content_one_to_many(dict_attr, fe_entity_variables)
                         self.build_dto_main_content(dict_attr, dict_attr["fe_pk_type"])
                 elif str(dict_attr["column"]) == "many_to_many_owner":
                     self.build_main_content_many_to_many_owner(dict_attr, pk_dict)
@@ -224,10 +233,12 @@ class EntityGenerator:
                         dict_class["fe_property"] + ")\n"
         self.content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "[];\n\n"
 
-    def build_main_content_one_to_many(self, dict_class: dict):
+    def build_main_content_one_to_many(self, dict_class: dict, fe_entity_variables: list):
+        fe_entity_counter = fe_entity_variables.count(str(dict_class["foreign_entity"]))
         self.content += "  " + self.decorator + 'OneToMany(() => ' + dict_class["foreign_entity"] + ', (e) => e.' + \
                         dict_class["fe_property"] + ')\n'
-        self.content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + ";\n\n"
+        self.content += "  " + dict_class["name"] + (str(fe_entity_counter + 1) if fe_entity_counter > 0 else '') + "?: " + dict_class["foreign_entity"] + ";\n\n"
+        fe_entity_variables.append(dict_class["foreign_entity"])
 
     def build_close(self):
         self.content += "}"

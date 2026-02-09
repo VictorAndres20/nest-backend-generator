@@ -23,7 +23,7 @@ class IndexApiGenerator:
     def build_module_exports(self):
         for i in self.module_list:
             self.content += "export * from './" + i + "/controller/" + i + ".controller';\n"
-            self.content += "export * from './" + i + "/service/" + i + ".service';\n"
-            self.content += "export * from './" + i + "/entity/" + i + ".entity';\n"
-            self.content += "export * from './" + i + "/entity/" + i + ".dto';\n"
+            self.content += "export * from './" + i + "/service/_" + i + ".service';\n"
+            self.content += "export * from '../_entities/" + i + ".entity';\n"
+            self.content += "export * from './" + i + "/model/" + i + ".dto';\n"
             self.content += "export * from './" + i + "/" + i + ".module';\n"

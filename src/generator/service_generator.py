@@ -82,7 +82,7 @@ class ServiceGenerator:
             col = str(attr_dict["column"])
             if col != "foreign_ref" and col != "PrimaryGeneratedColumn" and col != "many_to_many" and col != "many_to_many_owner":
                 if col == "foreign":
-                    foreign_variable_name = attr_dict["fe_module"] + "_id"
+                    foreign_variable_name = attr_dict["name"] + "_id"
                     self.content += "      " + foreign_variable_name + ": dto." + foreign_variable_name + ",\n"
                 else:
                     self.content += "      " + attr_dict["name"] + ": dto." + attr_dict["name"] + ",\n"
@@ -111,7 +111,7 @@ class ServiceGenerator:
             col = str(attr_dict["column"])
             if col != "foreign_ref" and col != "many_to_many" and col != "many_to_many_owner":
                 if col == "foreign":
-                    foreign_variable_name = attr_dict["fe_module"] + "_id"
+                    foreign_variable_name = attr_dict["name"] + "_id"
                     self.content += "    entity." + foreign_variable_name + " = dto." + foreign_variable_name + \
                                     " ?? " + " entity." + foreign_variable_name + ";\n"
                 else:
