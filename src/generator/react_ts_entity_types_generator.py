@@ -52,13 +52,13 @@ class ReactTSEntityTypesGenerator:
             if bool(dict_attr["isEnum"]):
                 fe_entity = dict_attr["type"]
                 fe_module = get_module_name(dict_attr["fe_module"])
-                enum_import = "import { " + fe_entity + " } from './" + \
+                enum_import = "import { type " + fe_entity + " } from './" + \
                               fe_module + ".type';\n"
                 self.class_imports += enum_import
 
             if str(dict_attr["column"]).startswith("foreign") or str(dict_attr["column"]).startswith("many_to_many"):
                 fe_module = get_module_name(dict_attr["fe_module"])
-                self.class_imports += "import {\n  " + dict_attr["foreign_entity"] + "EntityQuery,\n  " + dict_attr["foreign_entity"] + "EntityType,\n} from './" + \
+                self.class_imports += "import {\n  type " + dict_attr["foreign_entity"] + "EntityQuery,\n  type " + dict_attr["foreign_entity"] + "EntityType,\n} from './" + \
                                       fe_module + ".types';\n"
 
     def build_class(self, list_attr: List):

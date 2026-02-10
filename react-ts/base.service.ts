@@ -1,32 +1,32 @@
-import { MAIN_API_HOST } from '../../_config/api';
-import { getToken } from '../../../_utils/storage-handler';
-import { HttpResponse } from './base.types';
+import { MAIN_API_HOST } from "../../_config/api";
+import { getToken } from "../../../_utils/storage-handler";
+import { type HttpResponse } from "./base.types";
 
 export const buildHeadersOptions = () => ({
-  'Content-Type': 'application/json',
+  "Content-Type": "application/json",
   Authorization: `Bearer ${getToken()}`,
 });
 
 export const GET_OPTIONS = {
-  method: 'GET',
+  method: "GET",
 };
 
 export const POST_OPTIONS = {
-  method: 'POST',
+  method: "POST",
 };
 
 export const PUT_OPTIONS = {
-  method: 'PUT',
+  method: "PUT",
 };
 
 export const DELETE_OPTIONS = {
-  method: 'DELETE',
+  method: "DELETE",
 };
 
 export const sendFetch = <E, DTO>(
   path: string,
   optionsParam: RequestInit,
-  body?: DTO
+  body?: DTO,
 ): Promise<HttpResponse<E>> => {
   const options = { ...optionsParam, headers: buildHeadersOptions() };
   if (body != null) options.body = JSON.stringify(body);
@@ -44,7 +44,7 @@ export const sendFetch = <E, DTO>(
 export const handleFetch = async <E, DTO>(
   path: string,
   options: RequestInit,
-  body?: DTO
+  body?: DTO,
 ): Promise<HttpResponse<E>> => {
   const json = await sendFetch<E, DTO>(path, options, body);
   if (!json.ok) throw new Error(json.error);

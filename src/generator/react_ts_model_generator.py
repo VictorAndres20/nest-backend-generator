@@ -26,7 +26,7 @@ class ReactTSModelGenerator:
     def build_class_imports(self, list_attr: List):
         class_name = list_attr[0]["name"]
         entity_module = get_module_name(list_attr[0]["table_name"])
-        self.class_imports += "import {\n  " + class_name + "DTO,\n  " + class_name + "EntityType,\n} from '../_types/" + \
+        self.class_imports += "import {\n  type " + class_name + "DTO,\n  type " + class_name + "EntityType,\n} from '../_types/" + \
                               entity_module + ".types';\n"
 
 
@@ -56,11 +56,11 @@ class ReactTSModelGenerator:
                     foreign_destructuring += f"{dict_attr["name"]}, "
 
             self.content += "  const { " + foreign_destructuring + "...rest } = entity;\n"
-            self.content += "  const newEnt:" + list_attr[0]["name"] +"DTO = rest as " + list_attr[0]["name"] +"DTO;\n"
+            self.content += "  const newEnt: " + list_attr[0]["name"] +"DTO = rest as " + list_attr[0]["name"] +"DTO;\n"
             for i in range(len(list_attr)):
                 dict_attr = list_attr[i]
                 if str(dict_attr["column"]) == "foreign":
-                    self.content += "  newEnt." + dict_attr["name"] + " = " +\
+                    self.content += "  newEnt." + dict_attr["name"] + "_id = " +\
                                      dict_attr["name"] + "?." + dict_attr["fe_pk"] + ";\n"
             self.content += "  return newEnt;\n"
         self.content += "};\n\n"
@@ -71,6 +71,9 @@ class ReactTSModelGenerator:
         for i in range(len(list_attr)):
             dict_attr = list_attr[i]
             if dict_attr["type"] != "entity" and not str(dict_attr["column"]).startswith("foreign_ref"):
-                self.content += "    " + dict_attr["name"] + ": " + get_empty_value(dict_attr) + ",\n"
+                if str(dict_attr["column"]) == "foreign":
+                    self.content += "    " + dict_attr["name"] + "_id: " + get_empty_value(dict_attr) + ",\n"
+                else:
+                    self.content += "    " + dict_attr["name"] + ": " + get_empty_value(dict_attr) + ",\n"
         self.content += "  };\n"
         self.content += "};\n\n"

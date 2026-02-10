@@ -1,6 +1,6 @@
-import { JSX } from 'react';
-import MyPage from './my-page';
-import { my_page_path } from './path-pages';
+import { type JSX } from "react";
+import MyPage from "./my-page";
+import { my_page_path } from "./path-pages";
 
 export interface RouterPage {
   path: string;

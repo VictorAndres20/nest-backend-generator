@@ -1,5 +1,5 @@
-import { useCallback, useState } from 'react';
-import { useEntityQuery, UseEntityQueryProps } from './use-entity-query';
+import { useCallback, useState } from "react";
+import { useEntityQuery, type UseEntityQueryProps } from "./use-entity-query";
 //import { message } from "antd";
 
 export const useManyPaged = <E, P extends { page: number; limit: number }>({
@@ -8,7 +8,7 @@ export const useManyPaged = <E, P extends { page: number; limit: number }>({
   isMountFetch = false,
 }: UseEntityQueryProps<E, P>) => {
   const [pagedFilterData, setPagedFilterData] = useState<P | undefined>(
-    filterData
+    filterData,
   );
 
   const { isLoading, fetchedData, loadData } = useEntityQuery<E, P>({

@@ -1,14 +1,96 @@
-.flex-col {
+/* Using Tailwind */
+/* VSCode extension "Tailwind CSS IntelliSense" bradlc.vscode-tailwindcss */
+/* Tip: Tailwind configuration with Vite in vite.config.ts
+    - Put tailwindcss plugin after react plugin
+*/
+@import "tailwindcss";
+
+/* Define your custom theme variables here */
+@theme {
+  /* Z-index levels */
+  --z-index-toolbar: 7000;
+
+  /* Static branding colors */
+  --color-primary: #48ad52;
+
+  /**
+  * Theme variables
+  */
+
+  /* Themed branding colors */
+  --color-primary-dark: #279232;
+  --color-primary-medium: #68c052;
+  --color-primary-light: #e7f3e4;
+
+  /* Background colors */
+  --color-background: #ffffff;
+  --color-background-primary: #faf0ec;
+
+  /* Foreground colors */
+  --color-foreground: #171717;
+
+  /* Shadow colors */
+  --color-shadow: rgba(0, 0, 0, 0.2);
+
+  /* Border colors */
+  --color-border: #e0e0e0;
+}
+
+/* override theme variables for the dark theme */
+[data-theme="dark"] {
+  /* Themed branding colors */
+  --color-primary-dark: #f4f8f3;
+  --color-primary-medium: #f4f8f3;
+  --color-primary-light: #e7f3e4;
+
+  /* Background colors */
+  --color-background: #1b1713;
+  --color-background-primary: #e34c06;
+
+  /* Foreground colors */
+  --color-foreground: #ffffff;
+
+  /* Shadow colors */
+  --color-shadow: rgba(250, 250, 250, 0.8);
+
+  /* Border colors */
+  --color-border: #e0e0e0;
+}
+
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Add your custom font */
+/*
+@font-face {
+  font-family: "SpaceGrotesk";
+  src:
+    local("SpaceGrotesk"),
+    url("./_assets/fonts/SpaceGrotesk.ttf") format("truetype");
+}
+
+body {
+  font-family: "SpaceGrotesk";
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
+*/
+
+/* Custom styles like loading spinner and banner */
+.vp-flex-col {
   display: flex;
   flex-direction: column;
 }
 
-.flex-row {
+.vp-flex-row {
   display: flex;
   flex-direction: row;
 }
 
-.flex-center {
+.vp-flex-center {
   justify-content: center;
   align-items: center;
 }
@@ -23,10 +105,6 @@
   animation: spin 1s ease infinite;
 }
 
-.vp-banner {
-  width: 900px;
-}
-
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -38,7 +116,8 @@
 }
 
 @media only screen and (max-width: 800px) {
-  .vp-banner {
-    width: 350px;
+  .vp-spinner {
+    width: 26px;
+    height: 26px;
   }
 }

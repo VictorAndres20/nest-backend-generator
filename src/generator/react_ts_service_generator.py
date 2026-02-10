@@ -24,10 +24,10 @@ class ReactTSServiceGenerator:
     def build_class_imports(self, list_attr: List):
         class_name = list_attr[0]["name"]
         entity_module = get_module_name(list_attr[0]["table_name"])
-        self.class_imports += "import {\n  " + class_name + "DTO,\n  " + class_name + "EntityType,\n  " + \
-                              class_name + "EntityQuery,\n  " + class_name + "EntityPagedQuery,\n} from '../_types/" + \
+        self.class_imports += "import {\n  type " + class_name + "DTO,\n  type " + class_name + "EntityType,\n  type " + \
+                              class_name + "EntityQuery,\n  type " + class_name + "EntityPagedQuery,\n} from '../_types/" + \
                               entity_module + ".types';\n"
-        self.class_imports += "import { HttpResponse } from './_commons/base.types';\n"
+        self.class_imports += "import { type HttpResponse } from './_commons/base.types';\n"
 
     def build_class(self, module_name: str, entity_dict: dict, pk_dict: dict, list_attr: List):
         self.build_headers(list_attr)

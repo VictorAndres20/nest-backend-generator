@@ -1,10 +1,10 @@
-import React, { JSX } from 'react';
-import { getToken } from '../_utils/storage-handler';
-import { Link } from 'react-router-dom';
+import React, { type JSX } from "react";
+import { getToken } from "../_utils/storage-handler";
+import { Link } from "react-router-dom";
 
 /*
 Change validateSession function as your needs
-And more validations if you need 
+And more validations if you need
 
 To use it
 called like
@@ -55,16 +55,16 @@ const AuthWrapper = (AuthComponent: () => JSX.Element) =>
       return (
         <div
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '20px 20px',
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "20px 20px",
           }}
         >
           <span>¡Ingreso no autorizado!</span>
           <span>Debes iniciar sesión para ingresar</span>
-          <Link to={'/'}>Ir a login</Link>
+          <Link to={"/"}>Ir a login</Link>
         </div>
       );
     }

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
-import { HttpResponse } from '../../_services/_commons/base.types';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { type HttpResponse } from "../../_services/_commons/base.types";
 // import { message } from "antd";
 
 export interface UseEntityQueryProps<E, P> {
@@ -28,11 +28,12 @@ export const useEntityQuery = <E, P>({
     list: [],
     paged: null,
   });
+  const hasFetchedOnMount = useRef(false);
 
   const loadData = useCallback(
     (
       paramFilterData: P | undefined,
-      callback?: (json: HttpResponse<E>) => void
+      callback?: (json: HttpResponse<E>) => void,
     ) => {
       if (!fetchFunc)
         throw new Error('No "fetchFunc" specified in "useEntityQuery" hook');
@@ -56,12 +57,17 @@ export const useEntityQuery = <E, P>({
           // message.error(error.message);
         });
     },
-    [fetchFunc]
+    [fetchFunc],
   );
 
   useEffect(() => {
-    if (isMountFetch && filterData) loadData(filterData);
-  }, [isMountFetch, filterData, loadData]);
+    if (isMountFetch && !hasFetchedOnMount.current) {
+      hasFetchedOnMount.current = true;
+      queueMicrotask(() => {
+        loadData(filterData);
+      });
+    }
+  }, [filterData, isMountFetch, loadData]);
 
   return {
     isLoading,

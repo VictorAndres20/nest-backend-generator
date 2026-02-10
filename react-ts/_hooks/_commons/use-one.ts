@@ -1,4 +1,4 @@
-import { useEntityQuery, UseEntityQueryProps } from './use-entity-query';
+import { useEntityQuery, type UseEntityQueryProps } from "./use-entity-query";
 //import { message } from "antd";
 
 export const useOne = <E, P>({

@@ -2,13 +2,13 @@ import {
   BrowserRouter as Router,
   Routes as Switch,
   Route,
-} from 'react-router-dom';
+} from "react-router-dom";
 import {
   router_pages,
-  RouterPages,
-  RouterPageWithChildren,
-} from './pages/router-pages';
-import NotFoundPage from './widgets/not-found';
+  type RouterPages,
+  type RouterPageWithChildren,
+} from "./pages/router-pages";
+import NotFoundPage from "./widgets/not-found";
 
 function App() {
   const renderRoutes = (modules: RouterPages) => {
@@ -18,7 +18,7 @@ function App() {
           <Route
             path={`${module.path}`}
             element={<module.component />}
-            key={`route_${module.path ?? 'root'}_${key}`}
+            key={`route_${module.path ?? "root"}_${key}`}
           >
             {renderRoutes((module as RouterPageWithChildren).children ?? [])}
           </Route>
@@ -28,7 +28,7 @@ function App() {
         <Route
           path={`${module.path}`}
           element={<module.component />}
-          key={`main_route_${module.path ?? 'root'}_${key}`}
+          key={`main_route_${module.path ?? "root"}_${key}`}
         />
       );
     });
