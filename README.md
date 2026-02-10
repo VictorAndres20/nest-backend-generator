@@ -42,6 +42,8 @@ npm install --save oracledb
 - OPTIONAL
 ```bash
 npm install --save exceljs
+npm rm --save xlsx
+npm i --save https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 ```
 
 - Create React project with vite.
