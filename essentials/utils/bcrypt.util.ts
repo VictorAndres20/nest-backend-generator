@@ -1,17 +1,17 @@
 // npm install bcrypt
 // npm i --save-dev @types/bcrypt
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 
 const saltOrRounds = 10;
 
-export const generateSalt = () => {
+export const generateSalt = (): string => {
   return bcrypt.genSaltSync(saltOrRounds);
 };
 
-export const cryptText = (text: string): string => {
+export const encryptText = (text: string): string => {
   return bcrypt.hashSync(text, saltOrRounds);
 };
 
-export const isSameCrypted = (text: string, crypt: string): boolean => {
+export const isSameEncrypted = (text: string, crypt: string): boolean => {
   return bcrypt.compareSync(text, crypt);
 };
