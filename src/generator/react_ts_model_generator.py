@@ -8,7 +8,13 @@ def get_empty_value(dict_attr: dict):
     if dict_attr["column"] == 'PrimaryGeneratedColumn':
         return "undefined"
 
-    return "''"
+    if dict_attr["type"] == 'number':
+        return "false"
+
+    if dict_attr["type"] == 'number' or dict_attr["fe_pk_type"] == 'number':
+        return "0"
+
+    return '""'
 
 
 class ReactTSModelGenerator:
@@ -26,8 +32,8 @@ class ReactTSModelGenerator:
     def build_class_imports(self, list_attr: List):
         class_name = list_attr[0]["name"]
         entity_module = get_module_name(list_attr[0]["table_name"])
-        self.class_imports += "import {\n  type " + class_name + "DTO,\n  type " + class_name + "EntityType,\n} from '../_types/" + \
-                              entity_module + ".types';\n"
+        self.class_imports += "import {\n  type " + class_name + "DTO,\n  type " + class_name + "EntityType,\n} from \"../_types/" + \
+                              entity_module + ".types\";\n"
 
 
     def build_class(self, list_attr: List):
@@ -43,7 +49,7 @@ class ReactTSModelGenerator:
 
     def build_transform_function(self, list_attr: List):
         self.content += "export const transform" + list_attr[0]["name"] + "EntityToDTO = (\n"
-        self.content += "  entity: " + list_attr[0]["name"] + "EntityType\n"
+        self.content += "  entity: " + list_attr[0]["name"] + "EntityType,\n"
         self.content += "): " + list_attr[0]["name"] + "DTO => {\n"
         foreign_index = find_index("column", "foreign", list_attr)
         if foreign_index == -1:
@@ -76,4 +82,4 @@ class ReactTSModelGenerator:
                 else:
                     self.content += "    " + dict_attr["name"] + ": " + get_empty_value(dict_attr) + ",\n"
         self.content += "  };\n"
-        self.content += "};\n\n"
+        self.content += "};\n"

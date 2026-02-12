@@ -1,6 +1,7 @@
 from typing import List
 
 from src.helpers.folder_handler import get_module_name
+from src.helpers.to_upper_snake_case import to_upper_snake_case
 
 REACT_TS_SERVICE_BASE_IMPORTS = "import {\n  handleFetch,\n  GET_OPTIONS,\n  POST_OPTIONS,\n  PUT_OPTIONS\n} " \
                        "from './_commons/base.service';\n\n"
@@ -50,13 +51,15 @@ class ReactTSServiceGenerator:
         query_name = f"{class_name}EntityQuery"
         paged_query_name = f"{class_name}EntityPagedQuery"
 
-        self.content += "const BASE_PATH = '/" + endpoint + "';\n\n"
+        base_path = "BASE_PATH_" + to_upper_snake_case(endpoint)
+
+        self.content += "export const " + base_path + " = '/" + endpoint + "';\n\n"
 
         self.content += "export const findAll" + class_name + " = async (): Promise<\n"
         self.content += "  HttpResponse<" + entity_type_name + "[]>\n"
         self.content += "> => {\n"
         self.content += "  return await handleFetch<" + entity_type_name + "[], undefined>(\n"
-        self.content += "    `${BASE_PATH}/all`,\n"
+        self.content += "    `${" + base_path + "}/all`,\n"
         self.content += "    GET_OPTIONS\n"
         self.content += "  );\n"
         self.content += "};\n\n"
@@ -67,7 +70,7 @@ class ReactTSServiceGenerator:
         self.content += "  HttpResponse<" + entity_type_name + ">\n"
         self.content += "> => {\n"
         self.content += "  return await handleFetch<" + entity_type_name + ", undefined>(\n"
-        self.content += "    `${BASE_PATH}/id/${" + pk_name + "}`,\n"
+        self.content += "    `${" + base_path + "}/id/${" + pk_name + "}`,\n"
         self.content += "    GET_OPTIONS\n"
         self.content += "  );\n"
         self.content += "};\n\n"
@@ -76,7 +79,7 @@ class ReactTSServiceGenerator:
         self.content += "  body: " + dto_name + "\n"
         self.content += "): Promise<HttpResponse<" + entity_type_name + ">> => {\n"
         self.content += "  return await handleFetch<" + entity_type_name + ", " + dto_name + ">(\n"
-        self.content += "    `${BASE_PATH}/create`,\n"
+        self.content += "    `${" + base_path + "}/create`,\n"
         self.content += "    POST_OPTIONS,\n"
         self.content += "    body\n"
         self.content += "  );\n"
@@ -87,7 +90,7 @@ class ReactTSServiceGenerator:
         self.content += "  body: " + dto_name + "\n"
         self.content += "): Promise<HttpResponse<" + entity_type_name + ">> => {\n"
         self.content += "  return await handleFetch<" + entity_type_name + ", " + dto_name + ">(\n"
-        self.content += "    `${BASE_PATH}/edit/${" + pk_name + "}`,\n"
+        self.content += "    `${" + base_path + "}/edit/${" + pk_name + "}`,\n"
         self.content += "    PUT_OPTIONS,\n"
         self.content += "    body\n"
         self.content += "  );\n"
@@ -100,10 +103,10 @@ class ReactTSServiceGenerator:
         self.content += "  HttpResponse<" + entity_type_name + "[]>\n"
         self.content += "> => {\n"
         self.content += "  return await handleFetch<" + entity_type_name + "[], undefined>(\n"
-        self.content += "    `${BASE_PATH}/all-paged/${page}/${limit}`,\n"
+        self.content += "    `${" + base_path + "}/all-paged/${page}/${limit}`,\n"
         self.content += "    GET_OPTIONS\n"
         self.content += "  );\n"
-        self.content += "};\n\n"
+        self.content += "};\n"
 
     def build_close(self):
         self.content += ""

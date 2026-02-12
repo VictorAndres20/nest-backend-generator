@@ -6,6 +6,9 @@ def to_upper_snake_case(text: str) -> str:
     # Replace spaces with underscores
     text = text.replace(' ', '_')
 
+    # Replace "-" with underscores
+    text = text.replace('-', '_')
+
     # Convert to uppercase
     text = text.upper()
 
