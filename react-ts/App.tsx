@@ -8,7 +8,7 @@ import {
   type RouterPages,
   type RouterPageWithChildren,
 } from "./pages/router-pages";
-import NotFoundPage from "./widgets/not-found";
+import { NotFoundPage } from "./widgets/errors/not-found";
 
 function App() {
   const renderRoutes = (modules: RouterPages) => {

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-// import { home_page_path } from "../pages/path-pages";
+// import { home_page_path } from "../../pages/path-pages";
 
-export default function NotFoundPage() {
+export function NotFoundPage() {
   return (
     <div>
       <h1>Página no encontrada</h1>
