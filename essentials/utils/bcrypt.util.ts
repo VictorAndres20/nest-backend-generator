@@ -2,7 +2,7 @@
 // npm i --save-dev @types/bcrypt
 import bcrypt from 'bcrypt';
 
-const saltOrRounds = 10;
+const saltOrRounds = 12;
 
 export const generateSalt = (): string => {
   return bcrypt.genSaltSync(saltOrRounds);
