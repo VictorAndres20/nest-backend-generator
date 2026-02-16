@@ -10,7 +10,7 @@ To use it
 called like
 
 import AuthWrapper from './hoc/auth_wrapper';
-const AuthComponent = AuthWrapper(MainRouter);
+const AuthComponent = AuthWrapper(MainRouter) as unknown as () => JSX.Element;
 
 Like this create a new Component that is wrapped by AuthWarpper
 
