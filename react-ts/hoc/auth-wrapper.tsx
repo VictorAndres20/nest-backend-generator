@@ -21,7 +21,7 @@ const validateSession = (token: string | null) => {
     return false;
   }
 
-  return false;
+  return true;
 };
 
 const AuthWrapper = (AuthComponent: () => JSX.Element) =>
