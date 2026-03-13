@@ -155,7 +155,7 @@ class ReactTSEntityTypesGenerator:
         self.query_content += "  " + dict_class["name"] + "?: " + dict_class["type"] + ";\n"
 
     def build_query_main_content_many_to_one(self, dict_class: dict):
-        self.query_content += "  " + dict_class["name"] + "_id" + check_nullish_operator(dict_class) + ": " + dict_class["fe_pk_type"] + check_null_type(dict_class) + ";\n"
+        self.query_content += "  " + dict_class["name"] + "_id" + check_nullish_operator(dict_class) + "?: " + dict_class["fe_pk_type"] + check_null_type(dict_class) + ";\n"
         self.query_content += "  " + dict_class["name"] + "?: " + dict_class["foreign_entity"] + "EntityQuery" + ";\n"
 
     def build_query_main_content_one_to_many(self, dict_class: dict, fe_entity_variables_query: list):

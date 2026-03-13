@@ -82,8 +82,10 @@ class ServiceGenerator:
             col = str(attr_dict["column"])
             if col != "foreign_ref" and col != "PrimaryGeneratedColumn" and col != "many_to_many" and col != "many_to_many_owner":
                 if col == "foreign":
-                    foreign_variable_name = attr_dict["name"] + "_id"
-                    self.content += "      " + foreign_variable_name + ": dto." + foreign_variable_name + ",\n"
+                    fe_pk = attr_dict["fe_pk"]
+                    foreign_variable = attr_dict["name"]
+                    foreign_variable_name_id = foreign_variable + "_id"
+                    self.content += "      " + foreign_variable + ": dto." + foreign_variable_name_id + " ? { " + fe_pk + ": dto." + foreign_variable_name_id + " } : undefined,\n"
                 else:
                     self.content += "      " + attr_dict["name"] + ": dto." + attr_dict["name"] + ",\n"
         self.content += "    });\n\n"
@@ -111,12 +113,15 @@ class ServiceGenerator:
             col = str(attr_dict["column"])
             if col != "foreign_ref" and col != "many_to_many" and col != "many_to_many_owner":
                 if col == "foreign":
-                    foreign_variable_name = attr_dict["name"] + "_id"
-                    self.content += "    entity." + foreign_variable_name + " = dto." + foreign_variable_name + \
-                                    " ?? " + " entity." + foreign_variable_name + ";\n"
+                    fe_pk = attr_dict["fe_pk"]
+                    foreign_variable = attr_dict["name"]
+                    foreign_variable_name_id = foreign_variable + "_id"
+                    self.content += "    if (dto." + foreign_variable_name_id + ")\n"
+                    self.content += "      entity." + foreign_variable + " = { " + fe_pk + ": dto." + foreign_variable_name_id + \
+                                    " } as " + dict_class["name"] + "['" + foreign_variable + "'];\n"
                 else:
                     self.content += "    entity." + attr_dict["name"] + " = dto." + attr_dict["name"] + \
-                                    " ?? " + " entity." + attr_dict["name"] + ";\n"
+                                    " ?? " + "entity." + attr_dict["name"] + ";\n"
         self.content += "\n    return entity;\n  }\n\n"
 
     def build_validation_before_edition_function(self, dict_class: dict):
