@@ -59,7 +59,7 @@ class ReactTSModelGenerator:
             for i in range(len(list_attr)):
                 dict_attr = list_attr[i]
                 if str(dict_attr["column"]) == "foreign":
-                    foreign_destructuring += f"{dict_attr["name"]}, "
+                    foreign_destructuring += f"{dict_attr['name']}, "
 
             self.content += "  const { " + foreign_destructuring + "...rest } = entity;\n"
             self.content += "  const newEnt: " + list_attr[0]["name"] +"DTO = rest as " + list_attr[0]["name"] +"DTO;\n"

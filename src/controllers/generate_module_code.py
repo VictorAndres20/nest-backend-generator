@@ -153,7 +153,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
                    enums_generator.content, False)
 
         # Add DDL to variable
-        ddl += f"CREATE TYPE \"{enum["name"]}\" AS ENUM(\n"
+        ddl += f"CREATE TYPE \"{enum['name']}\" AS ENUM(\n"
         for i in range(0, len(enum["values"])):
             value = enum["values"][i]
             ddl += f"    '{value}'"
@@ -164,7 +164,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
 
     # ***** Add schema to DDL if there is any
 
-    if db_schema is not None or db_schema != '':
+    if db_schema is not None and db_schema != '':
         ddl += f"CREATE SCHEMA {db_schema};\n\n"
 
     # ***** Generate Modules

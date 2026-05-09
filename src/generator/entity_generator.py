@@ -209,7 +209,7 @@ class EntityGenerator:
         if dict_class["is_primary_key"]:
             self.content += "  @PrimaryColumn()\n"
 
-        self.content += f"  {dict_class["name"]}_id{check_nullish_operator(dict_class)}: {dict_class["fe_pk_type"] + check_null_type(dict_class)}\n"
+        self.content += f"  {dict_class['name']}_id{check_nullish_operator(dict_class)}: {dict_class['fe_pk_type'] + check_null_type(dict_class)}\n"
         self.content += "\n"
 
     def build_main_content_many_to_many_owner(self, dict_class: dict, pk_dict: dict):
