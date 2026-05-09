@@ -28,6 +28,8 @@ NEST_ROOT_PATH = "nest"
 NEST_SRC_PATH = f"{NEST_ROOT_PATH}/src"
 NEST_ENTITIES_DIR_NAME = "_entities"
 NEST_SRC_ENTITIES_PATH = f"{NEST_SRC_PATH}/{NEST_ENTITIES_DIR_NAME}"
+NEST_MODELS_DIR_NAME = "_models"
+NEST_SRC_MODELS_PATH = f"{NEST_SRC_PATH}/{NEST_MODELS_DIR_NAME}"
 NEST_ENUMS_DIR_NAME = "_enums"
 NEST_SRC_ENUMS_PATH = f"{NEST_SRC_PATH}/{NEST_ENUMS_DIR_NAME}"
 NEST_SRC_API_PATH = f"{NEST_SRC_PATH}/api"
@@ -67,6 +69,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
     create_folder(models_path + NEST_ROOT_PATH)
     create_folder(models_path + NEST_SRC_PATH)
     create_folder(models_path + NEST_SRC_ENTITIES_PATH)
+    create_folder(models_path + NEST_SRC_MODELS_PATH)
     create_folder(models_path + NEST_SRC_ENUMS_PATH)
     create_folder(models_path + NEST_SRC_API_PATH)
     create_folder(models_path + NEST_SRC_ASSETS_PATH)
@@ -206,7 +209,6 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         # Create Nest entity folders
 
         create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name)
-        create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/model")
         create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/service")
         create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/controller")
 
@@ -216,7 +218,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         entity_generator.build_class(list_attr, pk_dict)
         write_code(models_path + f"{NEST_SRC_ENTITIES_PATH}/" + module_name + ".entity.ts",
                    entity_generator.content, False)
-        write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/model/" + module_name + ".dto.ts",
+        write_code(models_path + f"{NEST_SRC_MODELS_PATH}/" + module_name + ".dto.ts",
                    entity_generator.dto_content, False)
 
         # Generate and write Nest service

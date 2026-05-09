@@ -16,7 +16,7 @@ class ServiceGenerator:
 
     def build_additional_imports(self, module_name: str, entity_name: str):
         self.imports += "import { " + entity_name + " } from '../../../_entities/" + module_name + ".entity';\n"
-        self.imports += "import { " + entity_name + "DTO } from '../model/" + module_name + ".dto';\n"
+        self.imports += "import { " + entity_name + "DTO } from '../../../_models/" + module_name + ".dto';\n"
 
     def clean(self):
         self.imports = SERVICE_BASE_IMPORTS
