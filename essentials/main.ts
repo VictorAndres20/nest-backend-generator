@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import 'dotenv/config';
@@ -21,6 +22,10 @@ async function bootstrap() {
   const globalPrefix = process.env.GLOBAL_PREFIX || '';
   app.setGlobalPrefix(globalPrefix);
 
-  await app.listen(Number(process.env.SERVER_PORT));
+  const port = Number(process.env.SERVER_PORT);
+  await app.listen(port);
+  Logger.log(
+    `🚀 Application is running on: ${port}/${globalPrefix}`,
+  );
 }
 bootstrap();

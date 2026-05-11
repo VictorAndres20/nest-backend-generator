@@ -19,6 +19,7 @@ npm install --save @nestjs/typeorm typeorm reflect-metadata
 npm install --save @nestjs/passport passport @nestjs/jwt passport-jwt
 npm install --save-dev @types/passport-jwt
 npm install bcrypt
+npm i --save-dev @types/bcrypt
 npm install --save body-parser
 ```
 

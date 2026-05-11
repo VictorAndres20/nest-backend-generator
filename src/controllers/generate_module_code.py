@@ -209,7 +209,7 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
         # Create Nest entity folders
 
         create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name)
-        create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/models")
+        create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/model")
         create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/service")
         create_folder(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/controller")
 
@@ -221,8 +221,10 @@ def generate_module(models_path: str, file_path: str, db_schema: str, generate_s
                    entity_generator.content, False)
         write_code(models_path + f"{NEST_SRC_MODELS_PATH}/" + module_name + ".dto.ts",
                    entity_generator.dto_content, False)
-        write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/models/" + module_name + ".dto.ts",
-                   f"export * from '../../../{NEST_MODELS_DIR_NAME}/" + module_name + ".dto.ts'", False)
+
+        entity_dto_content = "export * from '../../../" + NEST_MODELS_DIR_NAME + "/" + module_name + ".dto';"
+        write_code(models_path + f"{NEST_SRC_API_PATH}/" + module_name + "/model/" + module_name + ".dto.ts",
+                   entity_dto_content, False)
 
         # Generate and write Nest service
 
